@@ -1,0 +1,8 @@
+[Player Spaceship]
+https://opengameart.org/content/space-ship-building-bits-volume-1
+
+[Space Backgrounds]
+https://opengameart.org/content/space-background-2
+
+[Enemies]
+https://opengameart.org/content/3x-updated-32x32-scifi-roguelike-enemies
