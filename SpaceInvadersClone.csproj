@@ -37,6 +37,11 @@
     <None Remove="Assets\Sprites\spaceship.png" />
   </ItemGroup>
 
+  <!--<ItemGroup>
+    <Compile Include=".old\
+			 .cs" />
+  </ItemGroup>-->
+
   <ItemGroup>
     <Content Include="Assets\Fonts\PixelColeco.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -47,7 +47,7 @@ namespace SpaceInvadersClone
 
                 bullet.Update();
 
-                if (!(-10 <= bullet.Y && bullet.Y <= Game.GameWindowInstance.Size.Y + 10))
+                if (!(-Game.GameWindowInstance.Size.Y <= bullet.Y && bullet.Y <= Game.GameWindowInstance.Size.Y + 10))
                 {
                     DeleteBullet(bullet);
                 }

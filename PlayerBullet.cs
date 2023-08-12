@@ -13,8 +13,6 @@ namespace SpaceInvadersClone
             direction = new Vector2f(0, -1);
             sprite = new Sprite(TextureBank.PlayerBulletTexture);
             sprite.Position = position;
-            Vector2f colliderOrigin = new Vector2f(X + XSize / 2, Y);
-            collider = new RectCollider(colliderOrigin - new Vector2f(2, 2), colliderOrigin + new Vector2f(2, 2));
         }
 
         public PlayerBullet Copy()
@@ -32,8 +30,6 @@ namespace SpaceInvadersClone
         {
             Vector2f deltaPos = velocity * direction;
             position += deltaPos;
-            collider.TopLeftCorner += deltaPos;
-            collider.BottomRightCorner += deltaPos;
             sprite.Position = position;
             
             bool doesCollide = DetectCollision();
@@ -73,7 +69,6 @@ namespace SpaceInvadersClone
         Vector2f position;
         Vector2f direction;
         Sprite sprite;
-        RectCollider collider;
         Hostile? enemyCollided;
         const float velocity = 12f;
     }

@@ -14,7 +14,6 @@ namespace SpaceInvadersClone
             initialPosition = position;
             sprite = new Sprite(TextureBank.EnemyBulletTexture);
             sprite.Position = position;
-            collider = new RectCollider(position - new Vector2f(sprite.Texture.Size.X / 2, sprite.Texture.Size.Y / 2), position + new Vector2f(sprite.Texture.Size.X / 2, sprite.Texture.Size.Y / 2));
         }
 
 
@@ -173,7 +172,7 @@ namespace SpaceInvadersClone
         Player player;
         Vector2f position, initialPosition, direction;
         Sprite sprite;
-        RectCollider collider;
+        
         float velocity, peakToPeakAmpl;
         bool verticalDownfall, targetted, verticalSine, verticalCosine;
 

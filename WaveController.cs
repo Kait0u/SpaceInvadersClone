@@ -6,7 +6,7 @@ using Utilities;
 
 namespace SpaceInvadersClone
 {
-    class EnemyGroup
+    abstract class EnemyGroup
     {
         public EnemyGroup() 
         {
@@ -14,28 +14,16 @@ namespace SpaceInvadersClone
             enemies = new List<Hostile>();
         }
 
-        virtual public void Update()
-        {
+        public abstract void Update();
 
-        }
+        public abstract void Move();
 
-        virtual public void Move()
-        {
-
-        }
-
-        //virtual public void AddEnemy(Enemy enemy, Vector2f position) 
+        //public virtual void ForceMove()
         //{ 
             
         //}
 
-        virtual public void ForceMove() 
-        { 
-
-        }
-
-        RenderWindow renderWindow;
-
+        protected RenderWindow renderWindow;
 
         List<Hostile> enemies;
 
@@ -139,7 +127,6 @@ namespace SpaceInvadersClone
             foreach (Enemy enemy in enemies)
             {
                 enemy.X += movementSpeed * direction.X;
-                enemy.BonusSpawnPointX += movementSpeed * direction.X;
             }
 
             if (descent)
@@ -179,7 +166,6 @@ namespace SpaceInvadersClone
                     foreach (Enemy enemy in enemies)
                     {
                         enemy.Y += movementSpeed;
-                        enemy.BonusSpawnPointY += movementSpeed;
 
                         // Kill those who are too far below the screen --> WaveController
                     }
@@ -262,7 +248,6 @@ namespace SpaceInvadersClone
                 foreach (Enemy enemy in enemies)
                 {
                     enemy.Y += movementSpeed;
-                    enemy.BonusSpawnPointY += movementSpeed;
                 }
             }
 

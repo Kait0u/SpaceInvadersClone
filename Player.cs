@@ -15,7 +15,6 @@ namespace SpaceInvadersClone
 
             sprite = new Sprite(TextureBank.PlayerTexture);
             position = new Vector2f(0, 0);
-            collider = new RectCollider(sprite.Position, sprite.Position + new Vector2f(XSize, YSize));
             bulletBP = new PlayerBullet(new Vector2f(X + XSize / 2, Y));
             clock = new Clock();
             sound = new Sound();
@@ -42,7 +41,6 @@ namespace SpaceInvadersClone
         {
             sprite = new Sprite(TextureBank.PlayerTexture);
             position = new Vector2f(0, 0);
-            collider = new RectCollider(sprite.Position, sprite.Position + new Vector2f(XSize, YSize));
             bulletBP = new PlayerBullet(new Vector2f(X + XSize / 2, Y));
             clock = new Clock();
             sound = new Sound();
@@ -118,8 +116,6 @@ namespace SpaceInvadersClone
 
             sprite.Position = position;
             shield.Position = position;
-            collider.TopLeftCorner = new Vector2f(position.X, position.Y);
-            collider.BottomRightCorner = new Vector2f(position.X + XSize, position.Y + YSize);
             bulletBP.X = position.X + XSize / 2 - bulletBP.XSize / 2;
             bulletBP.Y = position.Y;
 
@@ -266,7 +262,6 @@ namespace SpaceInvadersClone
         Sprite sprite;
         RenderWindow renderWindow;
         Vector2f position;
-        RectCollider collider;
         PlayerBullet bulletBP;
 
 
