@@ -2,6 +2,7 @@
 using SFML.Graphics;
 using SFML.System;
 using System;
+using System.Diagnostics.Metrics;
 using Utilities;
 
 namespace SpaceInvadersClone
@@ -372,162 +373,174 @@ namespace SpaceInvadersClone
         const int enemySize = 32;
     }
 
-    //class MeteorShower: EnemyGroup
-    //{
-    //    class SpawnLine
-    //    {
-    //        public SpawnLine(int alphaDeg, int r)
-    //        {
-    //            renderWindow = Application.GameWindowInstance;
+    class MeteorShower : EnemyGroup
+    {
+        class SpawnLine
+        {
+            public SpawnLine(int alphaDeg, int r)
+            {
+                renderWindow = Application.GameWindowInstance;
 
-    //            this.alphaDeg = alphaDeg;
-    //            this.alphaRad = DegToRad(alphaDeg);
-    //            this.r = r;
+                this.alphaDeg = alphaDeg;
+                this.alphaRad = DegToRad(alphaDeg);
+                this.r = r;
 
-    //            C = (Vector2f)renderWindow.Size / 2;
-    //            A = new Vector2f((float)(r * Math.Cos(alphaRad)), -(float)(r * Math.Sin(alphaRad))) + C;
-    //            B = new Vector2f((float)(r * Math.Cos(alphaRad + DegToRad(90))), -(float)(r * Math.Sin(alphaRad + DegToRad(90)))) + C;
+                C = (Vector2f)renderWindow.Size / 2;
+                A = new Vector2f((float)(r * Math.Cos(alphaRad)), -(float)(r * Math.Sin(alphaRad))) + C;
+                B = new Vector2f((float)(r * Math.Cos(alphaRad + DegToRad(90))), -(float)(r * Math.Sin(alphaRad + DegToRad(90)))) + C;
 
-    //            m = (float)(A.Y - B.Y) / (A.X - B.X);
-    //            intercept = A.Y - A.X * m;
-    //            thetaRad = (float)Math.Atan(m);
+                m = (float)(A.Y - B.Y) / (A.X - B.X);
+                intercept = A.Y - A.X * m;
+                thetaRad = (float)Math.Atan(m);
 
-    //            f = (x) => m * x + intercept;
+                f = (x) => m * x + intercept;
 
-    //            Vector2f t = new Vector2f((float)Math.Sin(thetaRad), (float)Math.Cos(thetaRad));
-    //            directionVector = t / (float)Utilities.Utilities.Magnitude(t);
+                //Vector2f t = new Vector2f((float)Math.Sin(thetaRad), (float)Math.Cos(thetaRad));
+                //directionVector = t / (float)Utilities.Utilities.Magnitude(t);
 
-    //            Vector2f u = new Vector2f(-(float)Math.Cos(thetaRad), (float)Math.Sin(thetaRad));
-    //            orthogonalVector = u / (float)Utilities.Utilities.Magnitude(u);
-    //        }
+                Vector2f t = A - B;
+                t /= (float)Utilities.Utilities.Magnitude(t);
+                directionVector = t;
+                orthogonalVector = new Vector2f(directionVector.Y, -directionVector.X);
 
-    //        public float Evaluate(float xValue) => f(xValue);
+                //Vector2f u = new Vector2f(-(float)Math.Cos(thetaRad), (float)Math.Sin(thetaRad));
+                //orthogonalVector = u / (float)Utilities.Utilities.Magnitude(u);
 
-    //        float DegToRad(float d) => d * degRadConversionCostant;
+                //orthogonalVector = new Vector2f(-directionVector.Y, directionVector.X);
+            }
 
-    //        RenderWindow renderWindow;
-    //        Vector2f A, B, C;
-    //        int alphaDeg, r;
-    //        float alphaRad, thetaRad;
+            public float Evaluate(float xValue) => f(xValue);
 
-    //        float m, intercept;
-    //        Func<float, float> f;
-    //        Vector2f directionVector, orthogonalVector;
+            float DegToRad(float d) => d * degRadConversionCostant;
 
-    //        public Vector2f DirectionVector => directionVector;
-    //        public Vector2f OrthogonalVector => orthogonalVector;
+            RenderWindow renderWindow;
+            Vector2f A, B, C;
+            int alphaDeg, r;
+            float alphaRad, thetaRad;
 
-    //        public Vector2f LowerEnd => -A.Y <= -B.Y ? A : B;
-    //        public Vector2f HigherEnd => -A.Y > -B.Y ? A : B;
+            float m, intercept;
+            Func<float, float> f;
+            Vector2f directionVector, orthogonalVector;
+
+            public Vector2f DirectionVector => directionVector;
+            public Vector2f OrthogonalVector => orthogonalVector;
+
+            public Vector2f LowerEnd => -A.Y <= -B.Y ? A : B;
+            public Vector2f HigherEnd => -A.Y > -B.Y ? A : B;
 
 
 
-    //        const float degRadConversionCostant = 0.0174532925199432957692369076848861271344f;
-    //    }
+            const float degRadConversionCostant = 0.0174532925199432957692369076848861271344f;
+        }
 
-    //    public MeteorShower(int health = 1)
-    //    {
-    //        random = new Random();
-    //        renderWindow = Game.GameWindowInstance;
-    //        List<Texture> meteorTextures = new List<Texture>() 
-    //        { 
-    //            TextureBank.MeteoriteTexture1, 
-    //            TextureBank.MeteoriteTexture2, 
-    //            TextureBank.MeteoriteTexture3, 
-    //            TextureBank.MeteoriteTexture4 
-    //        };
+        public MeteorShower(int health = 1)
+        {
+            random = new Random();
+            renderWindow = Game.GameWindowInstance;
+            List<Texture> meteorTextures = new List<Texture>()
+            {
+                TextureBank.MeteoriteTexture1,
+                TextureBank.MeteoriteTexture2,
+                TextureBank.MeteoriteTexture3,
+                TextureBank.MeteoriteTexture4
+            };
 
-    //        enemies = new List<Hostile>();
-    //        movingMeteors = new List<Meteor>();
-    //        meteorDelay = new Dictionary<Meteor, Time>();
-    //        enemyCount = random.Next(4, 5 + (int)(Math.Exp(health) / 2));
+            enemies = new List<Hostile>();
+            movingMeteors = new List<Meteor>();
+            meteorDelay = new Dictionary<Meteor, Time>();
+            enemyCount = 15 * random.Next(4, 5 + (int)(Math.Exp(health) / 2));
 
-    //        int alphaDeg = random.Next(20, 70 + 1);
-    //        int r = (int)Utilities.Utilities.Magnitude(new Vector2f(renderWindow.Size.X + maxEnemySize, renderWindow.Size.Y + maxEnemySize)) + 1;
-    //        spawnLine = new SpawnLine(alphaDeg, r);
+            int alphaDeg = random.Next(15, 75 + 1);
+            int r = (int)Utilities.Utilities.Magnitude(new Vector2f(renderWindow.Size.X/2 + maxEnemySize, renderWindow.Size.Y/2 + maxEnemySize)) + 1;
+            spawnLine = new SpawnLine(alphaDeg, r);
 
-    //        Vector2f dir = new Vector2f(spawnLine.OrthogonalVector.X, spawnLine.OrthogonalVector.Y);
-    //        dir.X = spawnLine.HigherEnd.X < spawnLine.LowerEnd.X ? -Math.Abs(dir.X) : Math.Abs(dir.X);
-    //        dir.Y = Math.Abs(dir.Y);
+            Vector2f dir = new Vector2f(spawnLine.OrthogonalVector.X, spawnLine.OrthogonalVector.Y);
+            dir.X = spawnLine.HigherEnd.X < spawnLine.LowerEnd.X ? -Math.Abs(dir.X) : Math.Abs(dir.X);
+            dir.Y = Math.Abs(dir.Y);
 
-    //        float left = Math.Min(spawnLine.LowerEnd.X, spawnLine.HigherEnd.X);
-    //        float right = Math.Max(spawnLine.LowerEnd.X, spawnLine.HigherEnd.X);
+            float left = Math.Min(spawnLine.LowerEnd.X, spawnLine.HigherEnd.X);
+            float right = Math.Max(spawnLine.LowerEnd.X, spawnLine.HigherEnd.X);
 
-    //        for (int i = 0; i < enemyCount; ++i) 
-    //        {
+            for (int i = 0; i < enemyCount; ++i)
+            {
 
-    //            int x = random.Next((int)left, (int)right + 1);
-    //            float y = spawnLine.Evaluate(x);
-    //            Vector2f pos = new Vector2f(x, y);
+                int x = random.Next((int)left, (int)right + 1);
+                float y = spawnLine.Evaluate(x);
+                Vector2f pos = new Vector2f(x, y);
 
-    //            float speed = random.Next(35, 165 + 1) / 10f;
+                float speed = random.Next(35, 165 + 1) / 10f;
 
-    //            int randInd = random.Next(meteorTextures.Count);
+                int randInd = random.Next(meteorTextures.Count);
 
-    //            Meteor meteor = new Meteor(pos, dir, speed, health, meteorTextures[randInd]);
-    //            enemies.Add(meteor);
+                Meteor meteor = new Meteor(pos, dir, speed, health, meteorTextures[randInd]);
+                enemies.Add(meteor);
 
-    //            Time meteorBreak = Time.FromMilliseconds(random.Next(150, 1750));
-    //            meteorDelay.Add(meteor, Time.FromMilliseconds(meteorBreak.AsMilliseconds()));
-    //        }
+                Time meteorBreak = Time.FromMilliseconds(random.Next(150, 1750)) / 2;
+                meteorDelay.Add(meteor, Time.FromMilliseconds(meteorBreak.AsMilliseconds()));
+            }
 
-    //        movementClock = new Clock();
-    //        meteorDeployClock = new Clock();
-    //        sound = new Sound(SoundBank.EnemyMove);
-    //    }
+            movementClock = new Clock();
+            meteorDeployClock = new Clock();
+            sound = new Sound(SoundBank.EnemyMove);
+        }
 
-    //    public override void Update()
-    //    {
-    //        foreach (Meteor meteor in enemies)
-    //        {
-    //            if (!movingMeteors.Contains(meteor) && meteorDeployClock.ElapsedTime >= meteorDelay[meteor])
-    //            {
-    //                movingMeteors.Add(meteor);
-    //                meteorDeployClock.Restart();
-    //                break;
-    //            }
-    //        }
+        public override void Update()
+        {
+            foreach (Meteor meteor in enemies)
+            {
+                //Console.WriteLine($"[{meteor.EnemySprite.CPointer}]");
+                //Console.WriteLine(meteor.EnemySprite.GetGlobalBounds().ToString());
+                //Console.WriteLine(meteor.EnemySprite.GetLocalBounds().ToString());
+                //Console.WriteLine();
 
-    //        Move();
-    //    }
+                if (!movingMeteors.Contains(meteor) && meteorDeployClock.ElapsedTime >= meteorDelay[meteor])
+                {
+                    movingMeteors.Add(meteor);
+                    meteorDeployClock.Restart();
+                    break;
+                }
+            }
 
-    //    public override void Move()
-    //    {
-    //        if (movementClock.ElapsedTime < movementBreak) return;
+            Move();
+        }
 
-    //        sound.Play();
-    //        Application.SoundController.RegisterSound(sound);
+        public override void Move()
+        {
+            if (movementClock.ElapsedTime < movementBreak) return;
 
-    //        foreach (Meteor meteor in movingMeteors)
-    //        {
-    //            meteor.Move();
-    //        }
+            sound.Play();
+            Application.SoundController.RegisterSound(sound);
 
-    //        movementClock.Restart();
-    //    }
+            foreach (Meteor meteor in movingMeteors)
+            {
+                meteor.Move();
+            }
 
-    //    public override List<Hostile> EnemyList => this.enemies;
+            movementClock.Restart();
+        }
 
-    //    public override Time MovementCooldown { get { return this.movementBreak; } set { this.movementBreak = value; } }
+        public override List<Hostile> EnemyList => this.enemies;
 
-    //    public override bool IsAggressive => this.isAggressive;
+        public override Time MovementCooldown { get { return this.movementBreak; } set { this.movementBreak = value; } }
 
-    //    bool isAggressive = false;
-    //    Random random;
-    //    RenderWindow renderWindow;
-    //    SpawnLine spawnLine;
-    //    List<Hostile> enemies;
-    //    List<Meteor> movingMeteors;
-    //    Dictionary<Meteor, Time> meteorDelay;
-    //    int enemyCount;
+        public override bool IsAggressive => this.isAggressive;
 
-    //    Clock movementClock, meteorDeployClock;
-    //    Time movementBreak;
+        bool isAggressive = false;
+        Random random;
+        RenderWindow renderWindow;
+        SpawnLine spawnLine;
+        List<Hostile> enemies;
+        List<Meteor> movingMeteors;
+        Dictionary<Meteor, Time> meteorDelay;
+        int enemyCount;
 
-    //    Sound sound;
+        Clock movementClock, meteorDeployClock;
+        Time movementBreak;
 
-    //    const int maxEnemySize = 3 * 32;
-    //}
+        Sound sound;
+
+        const int maxEnemySize = 4 * 32;
+    }
 
     // -------------------------------------------------------------------
 
@@ -566,8 +579,8 @@ namespace SpaceInvadersClone
         
         public void Start()
         {
-            List<Action> models = new List<Action>() { StartWave, StartRain };
-            //List<Action> models = new List<Action>() { StartMeteorShower };
+            //List<Action> models = new List<Action>() { StartWave, StartRain };
+            List<Action> models = new List<Action>() { StartMeteorShower };
             int choice = random.Next(models.Count);
             models[choice]();
         }
@@ -612,24 +625,24 @@ namespace SpaceInvadersClone
             }
         }
 
-        //void StartMeteorShower()
-        //{
-        //    if (!isWave && !isBreak)
-        //    {
-        //        Game.PlayerInstance.Shield(Time.FromSeconds(5));
-        //        enemyGroup = new MeteorShower(Math.Max(1, (int)(waveNumber / 2)));
-        //        ++waveNumber;
-        //        waveInitialSize = enemyGroup.EnemyList.Count;
+        void StartMeteorShower()
+        {
+            if (!isWave && !isBreak)
+            {
+                Game.PlayerInstance.Shield(Time.FromSeconds(5));
+                enemyGroup = new MeteorShower(2 * Math.Max(1, (int)(waveNumber / 2)));
+                ++waveNumber;
+                waveInitialSize = enemyGroup.EnemyList.Count;
 
-        //        isWave = true;
-        //        isBreak = false;
-        //        clock = new Clock();
-        //        // waveClock = clock; // ???
-        //        CalculateTimeBoundaries();
-        //        enemyGroup.MovementCooldown = Time.FromMilliseconds(150);
-        //        initialMovementCooldown = enemyGroup.MovementCooldown;
-        //    }
-        //}
+                isWave = true;
+                isBreak = false;
+                clock = new Clock();
+                // waveClock = clock; // ???
+                CalculateTimeBoundaries();
+                enemyGroup.MovementCooldown = Time.FromMilliseconds(150);
+                initialMovementCooldown = enemyGroup.MovementCooldown;
+            }
+        }
 
         void ArmEnemies()
         {
@@ -662,7 +675,7 @@ namespace SpaceInvadersClone
 
         public void Update()
         {
-            foreach (Enemy enemy in garbageList) 
+            foreach (Hostile enemy in garbageList) 
             {
                 enemyGroup.EnemyList.Remove(enemy);
             }

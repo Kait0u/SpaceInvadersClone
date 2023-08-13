@@ -1,6 +1,7 @@
 ﻿using SFML.Audio;
 using SFML.Graphics;
 using SFML.System;
+using System.Diagnostics.Metrics;
 using static SpaceInvadersClone.Enemy;
 
 namespace SpaceInvadersClone
@@ -160,10 +161,14 @@ namespace SpaceInvadersClone
             int x = 0;
             while (x == 0) x = random.Next(-2, 3);
             float scale = (x < 0 ? -1f / x : x);
+            sprite.Origin = new Vector2f(XSize, YSize) / 2f;
+            sprite.Rotation = random.Next(0, 180);
             sprite.Scale = new Vector2f(scale, scale);
 
             this.direction = new Vector2f(direction.X, direction.Y);
             this.speed = speed;
+
+            rotationDirection = 1;
 
             isAggressive = false;
 
@@ -172,6 +177,8 @@ namespace SpaceInvadersClone
 
         public override void Update()
         {
+            sprite.Position = position;
+            bonusSpawnPosition.X = position.X;
 
             if (lifebar != null)
             {
@@ -181,12 +188,18 @@ namespace SpaceInvadersClone
 
         public void Move()
         {
-            Console.WriteLine($"{sprite.CPointer} --> {position}");
             position += direction * speed;
+            sprite.Rotation += rotationDirection * speed * 0.75f;
         }
 
         public override void Draw()
         {
+
+            //RectangleShape shape = new RectangleShape(new Vector2f(sprite.GetGlobalBounds().Width, sprite.GetGlobalBounds().Height));
+            //shape.Position = new Vector2f(sprite.GetGlobalBounds().Left, sprite.GetGlobalBounds().Top);
+            //shape.FillColor = Color.Red;
+            //renderWindow.Draw(shape);
+
             renderWindow.Draw(sprite);
             lifebar?.Draw(renderWindow);
         }
@@ -196,10 +209,11 @@ namespace SpaceInvadersClone
             lifebarPosition = lbPosition;
 
             Vector2f dim = new Vector2f(XSize, YSize * 0.2f);
-            Vector2f lifebarTopLeftCorner = new Vector2f(X, 0);
-
-            if (lifebarPosition == LifebarPositions.Above) lifebarTopLeftCorner.Y = Y - 2 - dim.Y;
-            else if (lifebarPosition == LifebarPositions.Below) lifebarTopLeftCorner.Y = Y + dim.Y + 2;
+            float x = sprite.GetGlobalBounds().Left;
+            float y = sprite.GetGlobalBounds().Top;
+            if (lifebarPosition == LifebarPositions.Above) y = y - 2 - dim.Y;
+            else if (lifebarPosition == LifebarPositions.Below) y = y + dim.Y + 2;
+            Vector2f lifebarTopLeftCorner = new Vector2f(x, y);
 
             lifebar = new Lifebar(lifebarTopLeftCorner, dim, health / maxHealth);
 
@@ -216,9 +230,12 @@ namespace SpaceInvadersClone
 
             lifebar.Percentage = (float)health / maxHealth;
 
-            lifebar.X = X;
-            if (lifebarPosition == LifebarPositions.Above) lifebar.Y = Y - 2 - lifebar.Dimensions.Y;
-            else if (lifebarPosition == LifebarPositions.Below) lifebar.Y = Y + lifebar.Dimensions.Y + 2;
+            lifebar.X = sprite.GetGlobalBounds().Left;
+            if (lifebarPosition == LifebarPositions.Above) lifebar.Y = sprite.GetGlobalBounds().Top - 2 - lifebar.Dimensions.Y;
+            else if (lifebarPosition == LifebarPositions.Below) lifebar.Y = sprite.GetGlobalBounds().Top + lifebar.Dimensions.Y + 2;
+
+            
+
         }
 
         public override void RemoveLifebar()
@@ -229,12 +246,15 @@ namespace SpaceInvadersClone
 
         public override void Fire()
         {
-
+            return;
         }
 
         public override int PointValue { get { return (int)(pointValue * sprite.Scale.X); } }
 
+        public int RotationDirection { get => rotationDirection; set { rotationDirection = value / Math.Abs(value); } }
+
         Vector2f direction;
+        int rotationDirection;
         float speed;
 
         Sound sound;
