@@ -45,6 +45,13 @@ namespace SpaceInvadersClone
         const int enemySize = 32;
     }
 
+    class PlaceholderWave: EnemyGroup
+    {
+        public override void Update() { }
+
+        public override void Move() { }
+    }
+
     class Wave: EnemyGroup
     {
         public Wave(int health = 1) 
@@ -574,13 +581,12 @@ namespace SpaceInvadersClone
 
         public void StartWithBreak()
         {
-
+            enemyGroup = new PlaceholderWave();
         }
         
         public void Start()
         {
-            //List<Action> models = new List<Action>() { StartWave, StartRain };
-            List<Action> models = new List<Action>() { StartMeteorShower };
+            List<Action> models = new List<Action>() { StartWave, StartRain, StartMeteorShower };
             int choice = random.Next(models.Count);
             models[choice]();
         }
@@ -675,16 +681,10 @@ namespace SpaceInvadersClone
 
         public void Update()
         {
-            foreach (Hostile enemy in garbageList) 
-            {
-                enemyGroup.EnemyList.Remove(enemy);
-            }
-            garbageList.Clear();
-
-            if (enemyGroup.EnemyList.Count == 0) isWave = false;
-
             if (isWave)
             {
+                // if (enemyGroup.IsIntro) --> do the intro stuff 
+
                 enemyGroup.Update();
 
                 foreach (Hostile enemy in enemyGroup.EnemyList)
@@ -727,6 +727,14 @@ namespace SpaceInvadersClone
                         clock.Restart();
                     }
                 }
+
+                foreach (Hostile enemy in garbageList)
+                {
+                    enemyGroup.EnemyList.Remove(enemy);
+                }
+                garbageList.Clear();
+
+                if (enemyGroup.EnemyList.Count == 0) isWave = false;
 
             }
             else

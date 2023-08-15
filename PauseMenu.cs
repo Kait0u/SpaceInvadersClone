@@ -126,7 +126,7 @@ namespace SpaceInvadersClone
             actions = new Dictionary<Options, Action>()
             {
                 { Options.Continue, () => {} },
-                { Options.Sacrifice, () => {} },
+                { Options.Sacrifice, () => { Game.PlayerInstance.Sacrifice(); } },
                 { Options.Quit, () => { Application.State = Application.ApplicationStates.MainMenu; } },
             };
         }

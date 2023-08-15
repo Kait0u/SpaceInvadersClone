@@ -9,10 +9,13 @@
 
   <ItemGroup>
     <None Remove="Assets\Fonts\PixelColeco.ttf" />
+    <None Remove="Assets\Sounds\boss_death.ogg" />
+    <None Remove="Assets\Sounds\boss_reinforcements.ogg" />
     <None Remove="Assets\Sounds\enemy_damaged.ogg" />
     <None Remove="Assets\Sounds\enemy_explosion.ogg" />
     <None Remove="Assets\Sounds\enemy_fire.ogg" />
     <None Remove="Assets\Sounds\enemy_move.ogg" />
+    <None Remove="Assets\Sounds\error.ogg" />
     <None Remove="Assets\Sounds\explosion.ogg" />
     <None Remove="Assets\Sounds\gameover.ogg" />
     <None Remove="Assets\Sounds\move_selection.ogg" />
@@ -21,7 +24,11 @@
     <None Remove="Assets\Sounds\player_explosion.ogg" />
     <None Remove="Assets\Sounds\player_fire.ogg" />
     <None Remove="Assets\Sounds\powerup.ogg" />
+    <None Remove="Assets\Sounds\random.ogg" />
+    <None Remove="Assets\Sounds\random2.ogg" />
+    <None Remove="Assets\Sounds\sacrifice.ogg" />
     <None Remove="Assets\Sounds\select.ogg" />
+    <None Remove="Assets\Sounds\shield_protect.ogg" />
     <None Remove="Assets\Sprites\alien1.png" />
     <None Remove="Assets\Sprites\alien2.png" />
     <None Remove="Assets\Sprites\alien3.png" />
@@ -46,6 +53,12 @@
     <Content Include="Assets\Fonts\PixelColeco.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Sounds\boss_death.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Sounds\boss_reinforcements.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Sounds\enemy_damaged.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -56,6 +69,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Sounds\enemy_move.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Sounds\error.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Sounds\explosion.ogg">
@@ -82,7 +98,19 @@
     <Content Include="Assets\Sounds\powerup.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Sounds\random.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Sounds\random2.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Sounds\sacrifice.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Sounds\select.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Sounds\shield_protect.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Sprites\alien1.png">

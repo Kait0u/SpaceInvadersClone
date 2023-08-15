@@ -39,7 +39,11 @@ namespace SpaceInvadersClone
         public abstract void Update();
 
         public abstract void AddLifebar(LifebarPositions lbPosition);
-        public abstract void RemoveLifebar();
+        public virtual void RemoveLifebar()
+        {
+            lifebar = null;
+            lifebarPosition = null;
+        }
 
         public abstract void Fire();
 
@@ -136,12 +140,6 @@ namespace SpaceInvadersClone
             else if (lifebarPosition == LifebarPositions.Below) lifebar.Y = Y + lifebar.Dimensions.Y + 2;
         }
 
-        public override void RemoveLifebar()
-        {
-            lifebar = null;
-            lifebarPosition = null;
-        }
-
         public override void Fire()
         {
             EnemyBullet bullet = bulletBP.Copy();
@@ -233,15 +231,6 @@ namespace SpaceInvadersClone
             lifebar.X = sprite.GetGlobalBounds().Left;
             if (lifebarPosition == LifebarPositions.Above) lifebar.Y = sprite.GetGlobalBounds().Top - 2 - lifebar.Dimensions.Y;
             else if (lifebarPosition == LifebarPositions.Below) lifebar.Y = sprite.GetGlobalBounds().Top + lifebar.Dimensions.Y + 2;
-
-            
-
-        }
-
-        public override void RemoveLifebar()
-        {
-            lifebar = null;
-            lifebarPosition = null;
         }
 
         public override void Fire()
@@ -249,7 +238,7 @@ namespace SpaceInvadersClone
             return;
         }
 
-        public override int PointValue { get { return (int)(pointValue * sprite.Scale.X); } }
+        public override int PointValue { get { return (int)(pointValue * sprite.Scale.X * 100); } }
 
         public int RotationDirection { get => rotationDirection; set { rotationDirection = value / Math.Abs(value); } }
 

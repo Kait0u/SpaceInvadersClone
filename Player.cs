@@ -12,29 +12,7 @@ namespace SpaceInvadersClone
         public Player() 
         {
             renderWindow = Application.GameWindowInstance;
-
-            sprite = new Sprite(TextureBank.PlayerTexture);
-            position = new Vector2f(0, 0);
-            bulletBP = new PlayerBullet(new Vector2f(X + XSize / 2, Y));
-            clock = new Clock();
-            sound = new Sound();
-
-            weaponLevel = 1;
-            FireRate = 4f;
-            canFire = true;
-
-            currHealth = health;
-            isDead = false;
-            deathSound = new Sound(SoundBank.PlayerExplosion);
-            
-            isProtected = false;
-            shieldClock = new Clock();
-            shieldDuration = Time.FromSeconds(0);
-            shield = new CircleShape(XSize / 2f) { OutlineColor = Color.Cyan, FillColor = new Color(255, 255, 255, 0), OutlineThickness = 2f, Position = sprite.Position };
-
-            controlLost = false;
-            forcedDirection = new Vector2f(0, 0);
-            forcedPosition = new Vector2f(0, 0);
+            Reset();
         }
 
         public void Reset()
@@ -46,7 +24,9 @@ namespace SpaceInvadersClone
             sound = new Sound();
 
             weaponLevel = 1;
-            FireRate = 4f;
+            baseFireRate = 4f;
+            FireRate = baseFireRate;
+
             canFire = true;
 
             currHealth = health;
@@ -59,6 +39,8 @@ namespace SpaceInvadersClone
             shield = new CircleShape(XSize / 2f) { OutlineColor = Color.Cyan, FillColor = new Color(255, 255, 255, 0), OutlineThickness = 2f, Position = sprite.Position };
 
             controlLost = false;
+            forcedDirection = new Vector2f(0, 0);
+            forcedPosition = new Vector2f(0, 0);
         }
 
         public void Draw()
@@ -78,7 +60,6 @@ namespace SpaceInvadersClone
                 while (deathSound.Status == SoundStatus.Playing) { }
                 return;
             }
-                
 
             canFire = clock.ElapsedTime.AsMilliseconds() >= fireCooldown.AsMilliseconds();
 
@@ -93,9 +74,6 @@ namespace SpaceInvadersClone
                 {
                     position += delta;
                     fullForcedDirection -= delta;
-
-                    //Console.WriteLine(position);
-                    //Console.WriteLine(fullForcedDirection);
                 }
                 else
                 {
@@ -105,7 +83,6 @@ namespace SpaceInvadersClone
                     forcedDirection = new Vector2f(0, 0);
                 }
                 
-
             }
 
             position.X = Math.Max(0, position.X);
@@ -118,7 +95,6 @@ namespace SpaceInvadersClone
             shield.Position = position;
             bulletBP.X = position.X + XSize / 2 - bulletBP.XSize / 2;
             bulletBP.Y = position.Y;
-
         }
 
         void Controls()
@@ -213,7 +189,11 @@ namespace SpaceInvadersClone
 
         public void Damage(int damage)
         {
-            if (isProtected) return;
+            if (isProtected)
+            {
+                Application.SoundController.RegisterPlaySound(new Sound(SoundBank.ShieldProtect));
+                return;
+            }
 
             sound.SoundBuffer = SoundBank.PlayerDamaged;
 
@@ -242,6 +222,32 @@ namespace SpaceInvadersClone
             isProtected = false;
         }
 
+        public void Sacrifice()
+        {
+            int excessWeaponLevel = weaponLevel - 1;
+            int healthMissing = 100 - currHealth;
+
+            if (excessWeaponLevel > 0 && healthMissing > 0)
+            {
+                int healAmount;
+
+                if (excessWeaponLevel >= 10) healAmount = 10;
+                else if (excessWeaponLevel >= 5) healAmount = 5;
+                else healAmount = excessWeaponLevel;
+
+                healAmount = Math.Min(healthMissing, healAmount);
+                
+                WeaponLevel -= healAmount;
+                CurrentHealth += healAmount;
+
+                Application.SoundController.RegisterPlaySound(new Sound(SoundBank.PlayerSacrifice));
+            }
+            else
+            {
+                Application.SoundController.RegisterPlaySound(new Sound(SoundBank.Error));
+            }
+        }
+
         public float X { get { return position.X; } set { position.X = value; } }
         public float Y { get { return position.Y; } set { position.Y = value; } }
 
@@ -249,7 +255,7 @@ namespace SpaceInvadersClone
         public int YSize { get { return (int) sprite.Texture.Size.Y; } }
 
         float FireRate { get { return fireRate; } set { fireRate = value; fireCooldown = Time.FromSeconds(1 / fireRate); } }
-        public int WeaponLevel { get { return weaponLevel; } set { weaponLevel = value; FireRate = FireRate + 0.5f * (weaponLevel - 1); } }
+        public int WeaponLevel { get { return weaponLevel; } set { weaponLevel = value; FireRate = baseFireRate + 0.25f * (weaponLevel - 1); } }
 
         public int CurrentHealth { get { return currHealth; } private set { currHealth = Math.Max(0, Math.Min(value, 100)); } }
         public bool IsDead { get { return isDead; } }
@@ -270,7 +276,8 @@ namespace SpaceInvadersClone
         const int speed = 5;
         const float boostMultiplier = 1.5f;
         int weaponLevel;
-        float fireRate; // How many shots per second
+        float baseFireRate, fireRate; // How many shots per second
+
         Time fireCooldown;
         Clock clock;
         bool canFire, isDead, isProtected;

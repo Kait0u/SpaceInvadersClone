@@ -39,7 +39,7 @@ namespace SpaceInvadersClone
 
             infoBar = new InfoBar();
 
-            waveController.Start();
+            waveController.StartWithBreak();
         }
 
         public void Dispose()
