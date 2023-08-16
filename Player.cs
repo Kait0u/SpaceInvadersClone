@@ -162,12 +162,6 @@ namespace SpaceInvadersClone
                 else if (this.forcedPosition.Y >= renderWindow.Size.Y - YSize) this.forcedPosition.Y = renderWindow.Size.Y - YSize;
                 this.fullForcedDirection = this.forcedPosition - this.position;
                 this.forcedDirection = this.fullForcedDirection / (float)Utilities.Utilities.Magnitude(fullForcedDirection);
-
-                //Console.WriteLine($"P: {this.position}");
-                //Console.WriteLine($"FP:{this.forcedPosition}");
-                //Console.WriteLine($"FFD: {this.fullForcedDirection} | {(float)Utilities.Utilities.Magnitude(fullForcedDirection)}");
-                //Console.WriteLine($"FD: {this.forcedDirection}");
-                //Console.WriteLine();
             }
         }
 

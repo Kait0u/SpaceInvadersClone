@@ -32,7 +32,8 @@ namespace SpaceInvadersClone
         }
 
         public virtual void Draw() 
-        { 
+        {
+            if (isProtected) renderWindow.Draw(shield);
             renderWindow.Draw(sprite);
             lifebar?.Draw(renderWindow);
         }
@@ -47,6 +48,34 @@ namespace SpaceInvadersClone
 
         public abstract void Fire();
 
+        public virtual void Shield()
+        {
+            isProtected = true;
+            shield = new CircleShape(XSize / 2f)
+            {
+                OutlineColor = new Color(223, 24, 0, 200),
+                OutlineThickness = 2,
+                FillColor = new Color(0, 0, 0, 0)
+            };
+        }
+
+        public virtual void Shield(Color color)
+        {
+            Shield();
+            shield.OutlineColor = color;
+        }
+
+        public virtual void UpdateShield()
+        {
+            shield.Position = new Vector2f(X, Y);
+        }
+
+        public virtual void Unshield()
+        {
+            isProtected = false;
+            shield = null;
+        }
+
         public virtual float X { get => position.X; set { position.X = value; sprite.Position = position; RecalculateBonusSpawnPosition(); } }
         public virtual float Y { get => position.Y; set { position.Y = value; sprite.Position = position; RecalculateBonusSpawnPosition(); } }
         public virtual int XSize => (int)sprite.GetGlobalBounds().Width;
@@ -56,9 +85,13 @@ namespace SpaceInvadersClone
         public virtual EnemyBullet? BulletBP => bulletBP;
         public virtual bool IsAggressive => isAggressive;
 
+        public virtual bool IsProtected { get { return isProtected; } }
+        public virtual CircleShape ShieldSprite => shield;
+
         public virtual Vector2f BonusSpawnPoint => bonusSpawnPosition;
         public virtual int EnemyHealth { get => health; set { health = value; } }
         public abstract int PointValue { get; }
+
 
         protected Sprite sprite;
 
@@ -67,6 +100,9 @@ namespace SpaceInvadersClone
 
         protected bool isAggressive; // Is it supposed to shoot?
         protected EnemyBullet? bulletBP;
+
+        protected bool isProtected = false; // Is it supposed to take damage?
+        protected CircleShape shield;
 
         public enum LifebarPositions { Above, Below }
         protected Lifebar? lifebar;
@@ -88,11 +124,11 @@ namespace SpaceInvadersClone
             isAggressive = true;
         }
         
-        public override void Draw()
-        {
-            renderWindow.Draw(sprite);
-            lifebar?.Draw(renderWindow);
-        }
+        //public override void Draw()
+        //{
+        //    renderWindow.Draw(sprite);
+        //    lifebar?.Draw(renderWindow);
+        //}
 
         public override void Update()
         {
@@ -102,6 +138,11 @@ namespace SpaceInvadersClone
             if (lifebar != null)
             {
                 UpdateLifebar();
+            }
+
+            if (shield != null)
+            {
+                UpdateShield();
             }
         }
 
@@ -166,7 +207,7 @@ namespace SpaceInvadersClone
             this.direction = new Vector2f(direction.X, direction.Y);
             this.speed = speed;
 
-            rotationDirection = 1;
+            rotationDirection = random.Next(2) * 2 - 1;
 
             isAggressive = false;
 

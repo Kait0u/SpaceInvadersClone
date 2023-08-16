@@ -10,6 +10,7 @@
   <ItemGroup>
     <None Remove="Assets\Fonts\PixelColeco.ttf" />
     <None Remove="Assets\Sounds\boss_death.ogg" />
+    <None Remove="Assets\Sounds\boss_entrance.ogg" />
     <None Remove="Assets\Sounds\boss_reinforcements.ogg" />
     <None Remove="Assets\Sounds\enemy_damaged.ogg" />
     <None Remove="Assets\Sounds\enemy_explosion.ogg" />
@@ -18,17 +19,20 @@
     <None Remove="Assets\Sounds\error.ogg" />
     <None Remove="Assets\Sounds\explosion.ogg" />
     <None Remove="Assets\Sounds\gameover.ogg" />
+    <None Remove="Assets\Sounds\meteor_entrance.ogg" />
     <None Remove="Assets\Sounds\move_selection.ogg" />
     <None Remove="Assets\Sounds\player_crash.ogg" />
     <None Remove="Assets\Sounds\player_damaged.ogg" />
     <None Remove="Assets\Sounds\player_explosion.ogg" />
     <None Remove="Assets\Sounds\player_fire.ogg" />
     <None Remove="Assets\Sounds\powerup.ogg" />
+    <None Remove="Assets\Sounds\rainfall_entrance.ogg" />
     <None Remove="Assets\Sounds\random.ogg" />
     <None Remove="Assets\Sounds\random2.ogg" />
     <None Remove="Assets\Sounds\sacrifice.ogg" />
     <None Remove="Assets\Sounds\select.ogg" />
     <None Remove="Assets\Sounds\shield_protect.ogg" />
+    <None Remove="Assets\Sounds\wave_entrance.ogg" />
     <None Remove="Assets\Sprites\alien1.png" />
     <None Remove="Assets\Sprites\alien2.png" />
     <None Remove="Assets\Sprites\alien3.png" />
@@ -56,6 +60,9 @@
     <Content Include="Assets\Sounds\boss_death.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Sounds\boss_entrance.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Sounds\boss_reinforcements.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -80,6 +87,9 @@
     <Content Include="Assets\Sounds\gameover.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Sounds\meteor_entrance.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Sounds\move_selection.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -98,6 +108,9 @@
     <Content Include="Assets\Sounds\powerup.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Sounds\rainfall_entrance.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Sounds\random.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -111,6 +124,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Sounds\shield_protect.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Sounds\wave_entrance.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Sprites\alien1.png">

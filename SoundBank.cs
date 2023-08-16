@@ -26,6 +26,12 @@ namespace SpaceInvadersClone
         static SoundBuffer enemyDamaged = new SoundBuffer(assetPath + "enemy_damaged.ogg");
         static SoundBuffer enemyExplosion = new SoundBuffer(assetPath + "enemy_explosion.ogg");
 
+        // Intros:
+        static SoundBuffer waveEntrance = new SoundBuffer(assetPath + "wave_entrance.ogg");
+        static SoundBuffer rainfallEntrance = new SoundBuffer(assetPath + "rainfall_entrance.ogg");
+        static SoundBuffer meteorEntrance = new SoundBuffer(assetPath + "meteor_entrance.ogg");
+        static SoundBuffer bossEntrance = new SoundBuffer(assetPath + "boss_entrance.ogg");
+
 
 
         // Accessors
@@ -49,5 +55,11 @@ namespace SpaceInvadersClone
         public static SoundBuffer EnemyMove { get {  return enemyMove; } }
         public static SoundBuffer EnemyDamaged { get { return enemyDamaged; } }
         public static SoundBuffer EnemyExplosion { get { return enemyExplosion; } }
+
+        // Intros
+        public static SoundBuffer WaveEntrance => waveEntrance;
+        public static SoundBuffer RainfallEntrance => rainfallEntrance;
+        public static SoundBuffer MeteorEntrance => meteorEntrance;
+        public static SoundBuffer BossEntrance => bossEntrance;
     }
 }
