@@ -12,6 +12,8 @@
     <None Remove="Assets\Sounds\boss_death.ogg" />
     <None Remove="Assets\Sounds\boss_entrance.ogg" />
     <None Remove="Assets\Sounds\boss_reinforcements.ogg" />
+    <None Remove="Assets\Sounds\boss_shieldbroken.ogg" />
+    <None Remove="Assets\Sounds\boss_shieldbroken.wav" />
     <None Remove="Assets\Sounds\enemy_damaged.ogg" />
     <None Remove="Assets\Sounds\enemy_explosion.ogg" />
     <None Remove="Assets\Sounds\enemy_fire.ogg" />
@@ -64,6 +66,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Sounds\boss_reinforcements.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Sounds\boss_shieldbroken.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Sounds\enemy_damaged.ogg">

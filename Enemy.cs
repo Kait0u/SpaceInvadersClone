@@ -321,8 +321,6 @@ namespace SpaceInvadersClone
             Vector2f pos = PositionBullet();
             foreach (EnemyBullet b in bulletBPs) (b.X, b.Y) = (pos.X, pos.Y);
 
-            Console.WriteLine($"{position} + ({XSize / 2}, {YSize / 2}) --> {pos}");
-
             foreach (EnemyBullet b in directedBulletBPs)
             {
                 directedAngles[b] += revolutionSpeedDegrees * Utilities.Utilities.DegRadConversionConstant;
@@ -330,11 +328,6 @@ namespace SpaceInvadersClone
                 Vector2f dir = new Vector2f((float)Math.Cos(theta), (float)Math.Sin(theta));
                 b.SetDirected(dir, bulletSpeed);
             }
-
-        }
-
-        public void UpdateBulletSpawns()
-        {
 
         }
 

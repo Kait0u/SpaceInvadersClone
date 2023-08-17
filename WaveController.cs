@@ -529,7 +529,7 @@ namespace SpaceInvadersClone
             enemies = new List<Hostile>();
             movingMeteors = new List<Meteor>();
             meteorDelay = new Dictionary<Meteor, Time>();
-            enemyCount = 15 * random.Next(4, 5 + (int)(Math.Exp(health) / 2));
+            enemyCount = Math.Min(2000, 15 * random.Next(4, 5 + (int)(Math.Exp(health) / 2)));
 
             int alphaDeg = random.Next(15, 75 + 1);
             int r = (int)Utilities.Utilities.Magnitude(new Vector2f(renderWindow.Size.X/2 + maxEnemySize, renderWindow.Size.Y/2 + maxEnemySize)) + 1;
@@ -737,9 +737,6 @@ namespace SpaceInvadersClone
                     ringCenter.Y += enRouteDeltaY;
                     ringCenter.X = CalculateRingCenter().X;
 
-                    Console.WriteLine(ringCenter);
-
-
                     Application.SoundController.RegisterPlaySound(new Sound(SoundBank.EnemyMove));
 
                     --enRouteCountdown;
@@ -819,16 +816,27 @@ namespace SpaceInvadersClone
 
             this.healthUnits = healthUnits;
             bossDeathSound = new Sound(SoundBank.BossDeath);
+            bossBrokenShieldSound = new Sound(SoundBank.BossShieldBroken);
         }
 
         public override void Update()
         {
             if (bossDead) return;
-            if (boss.EnemyHealth <= 0) { bossDeathSound.Play(); ++Game.BossesSlain; return; }
+            if (boss.EnemyHealth <= 0) 
+            { 
+                bossDeathSound.Play(); 
+                ++Game.BossesSlain; 
+                for (int i = 0; i < 3; ++i) 
+                    Game.BonusController.IssuePowerup(
+                        new Vector2f(
+                            boss.X + boss.XSize/2 - 8 + random.Next(-16, 17), 
+                            boss.Y + boss.YSize/2 - 8 + random.Next(-16, 17))); 
+                return; 
+            }
 
             if (intro) { Intro(); activeRing.Update(); return; }
-            
-            if (activeRing != null && activeRing.EnemyList.Count == 0 && protectorRingsLeft == 0) activeRing = null;
+
+            if (activeRing != null && activeRing.EnemyList.Count == 0 && protectorRingsLeft == 0) { activeRing = null; bossBrokenShieldSound.Play(); }
             else if (activeRing != null && activeRing.EnemyList.Count == 0 && protectorRingsLeft > 0) CallProtectors();
 
             if (activeRing == null) { boss.Unshield(); }
@@ -862,7 +870,7 @@ namespace SpaceInvadersClone
 
         void CallProtectors()
         {
-            if (protectorRingsLeft <= 0) { activeRing = null; return; }
+            if (protectorRingsLeft <= 0) { activeRing = null; bossBrokenShieldSound.Play(); return; }
 
             activeRing = new ProtectorRing(boss, 6 + Game.BossesSlain, healthUnits);
             --protectorRingsLeft;
@@ -873,14 +881,12 @@ namespace SpaceInvadersClone
             float displacementY = renderWindow.Size.Y / 2f + bossSize;
             activeRing.RingCenter -= new Vector2f(0, displacementY);
             activeRing.EnemyList.ForEach(enemy => { enemy.Y -= displacementY; });
-            //Console.WriteLine($"---> {activeRing.RingCenter}");
             activeRing.EnRoute = true;
             activeRing.EnRouteClock = new Clock();
             activeRing.EnRouteDeltaTime = movementBreak / 4f;
             activeRing.EnRouteCountdown = 20;
             activeRing.EnRouteDeltaY = displacementY / activeRing.EnRouteCountdown;
             
-
             Arm();
             activeRing.ReinforcementsSound.Play();
         }
@@ -983,7 +989,7 @@ namespace SpaceInvadersClone
         float introDeltaY;
         int introCountdown;
         
-        Sound sound, bossDeathSound;
+        Sound sound, bossDeathSound, bossBrokenShieldSound;
 
         List<Hostile> garbageList;
 
@@ -1027,8 +1033,9 @@ namespace SpaceInvadersClone
         
         public void Start()
         {
-            //List<Action> models = new List<Action>() { StartWave, StartRain, StartMeteorShower };
-            List<Action> models = new List<Action>() { StartBoss };
+            List<Action> models;
+            if (waveNumber > 0 && waveNumber % 3 == 0) models = new List<Action>() { StartBoss };
+            else models = new List<Action>() { StartWave, StartRain, StartMeteorShower };
             int choice = random.Next(models.Count);
             models[choice]();
 
@@ -1040,7 +1047,7 @@ namespace SpaceInvadersClone
             if (!isWave && !isBreak)
             {
                 Game.PlayerInstance.Shield(Time.FromSeconds(5));
-                enemyGroup = new Wave(Math.Max(1, (int)(waveNumber / 2)));
+                enemyGroup = new Wave(1 + Game.BossesSlain);
                 ++waveNumber;
                 waveInitialSize = enemyGroup.EnemyList.Count;
                 ArmEnemies();
@@ -1060,7 +1067,7 @@ namespace SpaceInvadersClone
             if (!isWave && !isBreak)
             {
                 Game.PlayerInstance.Shield(Time.FromSeconds(5));
-                enemyGroup = new Rain(Math.Max(1, (int)(waveNumber / 2)));
+                enemyGroup = new Rain(1 + Game.BossesSlain);
                 ++waveNumber;
                 waveInitialSize = enemyGroup.EnemyList.Count;
                 ArmEnemies();
@@ -1080,7 +1087,7 @@ namespace SpaceInvadersClone
             if (!isWave && !isBreak)
             {
                 Game.PlayerInstance.Shield(Time.FromSeconds(5));
-                enemyGroup = new MeteorShower(2 * Math.Max(1, (int)(waveNumber / 2)));
+                enemyGroup = new MeteorShower(2 * (1 + Game.BossesSlain));
                 ++waveNumber;
                 waveInitialSize = enemyGroup.EnemyList.Count;
 
@@ -1099,7 +1106,7 @@ namespace SpaceInvadersClone
             if (!isWave && !isBreak)
             {
                 Game.PlayerInstance.Shield(Time.FromSeconds(5));
-                enemyGroup = new BossFight(Math.Max(1, (int)(waveNumber / 2)));
+                enemyGroup = new BossFight(1 + Game.BossesSlain);
                 ((BossFight)enemyGroup).Arm();
                 ++waveNumber;
                 waveInitialSize = enemyGroup.EnemyList.Count;
@@ -1157,7 +1164,7 @@ namespace SpaceInvadersClone
 
                     if (!Game.PlayerInstance.LostControl && enemy.EnemySprite.GetGlobalBounds().Intersects(Game.PlayerInstance.PlayerSprite.GetGlobalBounds()))
                     {
-                        Damage(enemy, Math.Max(1, (int)(waveNumber / 2)));
+                        Damage(enemy, 1 + Game.BossesSlain);
                         enemy.AddLifebar(Enemy.LifebarPositions.Above);
 
                         Game.PlayerInstance.Damage(40);

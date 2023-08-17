@@ -181,6 +181,6 @@ namespace SpaceInvadersClone
         float velocity, peakToPeakAmpl;
         bool verticalDownfall, targetted, directed, verticalSine, verticalCosine;
 
-        const int playerDamage = 20;
+        const int playerDamage = 10;
     }
 }

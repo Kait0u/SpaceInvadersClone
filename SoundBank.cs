@@ -28,6 +28,7 @@ namespace SpaceInvadersClone
 
         static SoundBuffer bossReinforcements = new SoundBuffer(assetPath + "boss_reinforcements.ogg");
         static SoundBuffer bossDeath = new SoundBuffer(assetPath + "boss_death.ogg");
+        static SoundBuffer bossShieldBroken = new SoundBuffer(assetPath + "boss_shieldbroken.ogg");
 
         // Intros:
         static SoundBuffer waveEntrance = new SoundBuffer(assetPath + "wave_entrance.ogg");
@@ -61,6 +62,7 @@ namespace SpaceInvadersClone
 
         public static SoundBuffer BossReinforcements => bossReinforcements;
         public static SoundBuffer BossDeath => bossDeath;
+        public static SoundBuffer BossShieldBroken => bossShieldBroken;
 
         // Intros
         public static SoundBuffer WaveEntrance => waveEntrance;
