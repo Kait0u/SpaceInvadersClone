@@ -496,7 +496,7 @@ namespace SpaceInvadersClone
 
             public float Evaluate(float xValue) => f(xValue);
 
-            float DegToRad(float d) => d * degRadConversionCostant;
+            float DegToRad(float d) => d * Utilities.Utilities.DegRadConversionConstant;
 
             RenderWindow renderWindow;
             Vector2f A, B, C;
@@ -512,10 +512,6 @@ namespace SpaceInvadersClone
 
             public Vector2f LowerEnd => -A.Y <= -B.Y ? A : B;
             public Vector2f HigherEnd => -A.Y > -B.Y ? A : B;
-
-
-
-            const float degRadConversionCostant = 0.0174532925199432957692369076848861271344f;
         }
 
         public MeteorShower(int health = 1)
@@ -641,6 +637,359 @@ namespace SpaceInvadersClone
         const int maxEnemySize = 4 * 32;
     }
 
+    class BossFight : EnemyGroup
+    {
+        class ProtectorRing
+        {
+            public ProtectorRing(BossEnemy bossEnemy, int enemyCount, int health)
+            {
+                Random random = new Random();
+                this.bossEnemy = bossEnemy;
+
+                enemyCount = Math.Min(enemyCount, 12);
+                enemies = new List<Enemy>();
+                enemyAngles = new Dictionary<Enemy, float>();
+
+                ringCenter = CalculateRingCenter();
+                r = bossSize * 1.5f / 2;
+                deltaTheta = 360 / enemyCount * Utilities.Utilities.DegRadConversionConstant;
+
+                for (int i = 0; i < enemyCount; ++i)
+                {
+                    float theta = i * deltaTheta;
+                    Vector2f pos = PositionEnemy(theta);
+                    Texture texture = textures[random.Next(textures.Length)];
+                    Enemy enemy = new Enemy(pos, health, texture);
+                    enemies.Add(enemy);
+                    enemyAngles.Add(enemy, theta);
+                }
+
+                revolutionClock = new Clock();
+
+                garbageList = new List<Enemy>();
+            }
+
+            public void Update()
+            {
+                if (!enRoute) ringCenter = CalculateRingCenter();
+
+                enemies.RemoveAll((enemy) => garbageList.Contains(enemy));
+                garbageList.Clear();
+
+                foreach (Enemy enemy in enemies)
+                {
+                    if (enemy.EnemyHealth <= 0)
+                    {
+                        garbageList.Add(enemy);
+                        continue;
+                    }
+                }
+
+                if (revolutionClock.ElapsedTime >= revolutionCooldown)
+                {
+                    foreach (Enemy enemy in enemies)
+                    {
+                        Vector2f pos = PositionEnemy(enemyAngles[enemy]);
+                        enemy.X = pos.X;
+                        enemy.Y = pos.Y;
+
+                        //enemy.Update();
+
+                        enemyAngles[enemy] += revolutionSpeedDegrees * Utilities.Utilities.DegRadConversionConstant;
+                    }
+
+                    revolutionClock.Restart();
+                }
+            }
+
+            Vector2f CalculateRingCenter() => new Vector2f(bossEnemy.X + bossSize / 2f, bossEnemy.Y + bossSize / 2f);
+
+            Vector2f PositionEnemy(float theta)
+            {
+                Vector2f result = new Vector2f((float)Math.Cos(theta), (float)Math.Sin(theta)) * r;
+                result -= new Vector2f(enemySize, enemySize) / 2f;
+                result += ringCenter;
+                return result;
+            }
+
+            public void Move(Vector2f delta)
+            {
+                foreach (Enemy enemy in enemies)
+                {
+                    enemy.X += delta.X;
+                    enemy.Y += delta.Y;
+                }
+            }
+
+            public void Rush()
+            {
+                if (enRouteCountdown <= 0)
+                {
+                    enRoute = false;
+                    UnshieldAll();
+                    reinforcementsSound.Loop = false;
+                    return;
+                }
+
+                if (enRouteClock.ElapsedTime >= enRouteDeltaTime)
+                {
+                    foreach (Enemy enemy in enemies) { enemy.Y += enRouteDeltaY; enemy.X += CalculateRingCenter().X - ringCenter.X; };
+                    ringCenter.Y += enRouteDeltaY;
+                    ringCenter.X = CalculateRingCenter().X;
+
+                    Console.WriteLine(ringCenter);
+
+
+                    Application.SoundController.RegisterPlaySound(new Sound(SoundBank.EnemyMove));
+
+                    --enRouteCountdown;
+                    enRouteClock.Restart();
+                }
+            }
+
+            public void ShieldAll()
+            {
+                foreach (Enemy enemy in enemies) enemy.Shield();
+            }
+
+
+            public void UnshieldAll()
+            {
+                foreach (Enemy enemy in enemies) enemy.Unshield();
+            }
+
+
+            BossEnemy bossEnemy;
+            Vector2f ringCenter;
+            public Vector2f RingCenter { get => ringCenter; set => ringCenter = value; }
+
+            List<Enemy> enemies, garbageList;
+
+            public List<Enemy> EnemyList => enemies;
+            
+            float r, deltaTheta;
+            Dictionary<Enemy, float> enemyAngles;
+            const float revolutionSpeedDegrees = 10f;
+            Clock revolutionClock;
+            Time revolutionCooldown = Time.FromMilliseconds(100);
+            public Time RevolutionCooldown { get => revolutionCooldown; set => revolutionCooldown = value; }
+
+
+            bool enRoute;
+            public bool EnRoute { get { return enRoute; } set { enRoute = value; } }
+            Clock enRouteClock;
+            public Clock EnRouteClock { get { return enRouteClock; } set { enRouteClock = value; } }
+            Time enRouteDeltaTime;
+            public Time EnRouteDeltaTime { get { return enRouteDeltaTime; } set { enRouteDeltaTime = value; } }
+            float enRouteDeltaY;
+            public float EnRouteDeltaY { get { return enRouteDeltaY; } set { enRouteDeltaY = value; } }
+
+            int enRouteCountdown; // 40
+            public int EnRouteCountdown { get { return enRouteCountdown; } set { enRouteCountdown = value; } }
+
+            Sound reinforcementsSound = new Sound(SoundBank.BossReinforcements) { Loop = true };
+            public Sound ReinforcementsSound => reinforcementsSound;
+
+            static Texture[] textures = new Texture[2] { TextureBank.EnemyTexture1, TextureBank.EnemyTexture2 };
+
+        }
+
+        public BossFight(int healthUnits = 1) : base()
+        {
+            random = new Random();
+            renderWindow = Game.GameWindowInstance;
+            sound = new Sound();
+            movementClock = new Clock();
+            movementBreak = Time.FromMilliseconds(500);
+            enemies = base.EnemyList;
+            protectorRingsLeft = Math.Min(1 + Game.BossesSlain * 2, 8);
+            isAggressive = true;
+
+            Vector2f pos = ((Vector2f)renderWindow.Size - new Vector2f(bossSize, bossSize)) / 2f;
+            boss = new BossEnemy(pos, healthUnits * 25, 3 + healthUnits);
+            boss.Shield();
+            enemies.Add(boss);
+
+            Vector2f[] directions = new Vector2f[2] {new Vector2f(1, 0), new Vector2f(-1, 0)};
+            movementDirection = directions[random.Next(directions.Length)];
+
+            activeRing = new ProtectorRing(boss, 6 + Game.BossesSlain, healthUnits);
+            --protectorRingsLeft;
+            foreach (Enemy enemy in activeRing.EnemyList) enemies.Add(enemy);
+
+            this.healthUnits = healthUnits;
+            bossDeathSound = new Sound(SoundBank.BossDeath);
+        }
+
+        public override void Update()
+        {
+            if (bossDead) return;
+            if (boss.EnemyHealth <= 0) { bossDeathSound.Play(); ++Game.BossesSlain; return; }
+
+            if (intro) { Intro(); activeRing.Update(); return; }
+            
+            if (activeRing != null && activeRing.EnemyList.Count == 0 && protectorRingsLeft == 0) activeRing = null;
+            else if (activeRing != null && activeRing.EnemyList.Count == 0 && protectorRingsLeft > 0) CallProtectors();
+
+            if (activeRing == null) { boss.Unshield(); }
+            
+            Move();
+            activeRing?.Update();
+
+            foreach (Hostile enemy in EnemyList) enemy.Update();
+
+        }
+
+        public override void Move()
+        {
+            if (movementClock.ElapsedTime < movementBreak) return;
+
+            if (0 > boss.X || boss.X > renderWindow.Size.X - boss.XSize) movementDirection *= -1;
+            boss.X += movementDirection.X;
+
+            if (activeRing != null)
+            {
+                if (activeRing.EnRoute)
+                {
+                    activeRing.Rush();
+                }
+                else
+                {
+                    activeRing.Move(movementDirection);
+                }
+            }
+        }
+
+        void CallProtectors()
+        {
+            if (protectorRingsLeft <= 0) { activeRing = null; return; }
+
+            activeRing = new ProtectorRing(boss, 6 + Game.BossesSlain, healthUnits);
+            --protectorRingsLeft;
+
+            foreach (Enemy enemy in activeRing.EnemyList) enemies.Add(enemy);
+            activeRing.ShieldAll();
+
+            float displacementY = renderWindow.Size.Y / 2f + bossSize;
+            activeRing.RingCenter -= new Vector2f(0, displacementY);
+            activeRing.EnemyList.ForEach(enemy => { enemy.Y -= displacementY; });
+            //Console.WriteLine($"---> {activeRing.RingCenter}");
+            activeRing.EnRoute = true;
+            activeRing.EnRouteClock = new Clock();
+            activeRing.EnRouteDeltaTime = movementBreak / 4f;
+            activeRing.EnRouteCountdown = 20;
+            activeRing.EnRouteDeltaY = displacementY / activeRing.EnRouteCountdown;
+            
+
+            Arm();
+            activeRing.ReinforcementsSound.Play();
+        }
+
+        public override void Intro()
+        {
+            if (introCountdown <= 0)
+            {
+                intro = false;
+                activeRing.UnshieldAll();
+                return;
+            }
+
+            if (introClock.ElapsedTime >= introDeltaTime)
+            {
+                foreach (Hostile enemy in enemies) enemy.Y += introDeltaY;
+
+                sound.SoundBuffer = SoundBank.EnemyMove;
+                sound.Play();
+                Application.SoundController.RegisterSound(sound);
+
+                --introCountdown;
+                introClock.Restart();
+
+            }
+        }
+
+        public override void PlayIntro()
+        {
+            if (intro) return;
+
+            intro = true;
+
+            float displacementY = renderWindow.Size.Y / 2f + bossSize;
+
+            foreach (Hostile enemy in enemies)
+            {
+                enemy.Y -= displacementY;
+                enemy.Shield();
+            }
+
+            Application.SoundController.RegisterPlaySound(new Sound(SoundBank.BossEntrance));
+
+            introClock = new Clock();
+            introDeltaTime = movementBreak / 4f;
+            introDeltaY = displacementY / 40f;
+            introCountdown = 40;
+        }
+
+        public void Arm()
+        {
+            foreach (Hostile enemy in enemies)
+            {
+                if (enemy == boss) continue;
+
+                int x = random.Next(4);
+                float vel = random.Next(200, 1001) / 100;
+                switch (x)
+                {
+                    case 0:
+                        enemy.BulletBP.SetVerticalDownfall(vel);
+                        break;
+                    case 1:
+                        enemy.BulletBP.SetTargetted(vel);
+                        break;
+                    case 2:
+                        enemy.BulletBP.SetVerticalSine(vel, random.Next(10, 70));
+                        break;
+                    case 3:
+                        enemy.BulletBP.SetVerticalCosine(vel, random.Next(10, 70));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        Random random;
+        RenderWindow renderWindow;
+        List<Hostile> enemies;
+        int healthUnits;
+
+        bool isAggressive = true;
+        public override bool IsAggressive => isAggressive;
+
+        BossEnemy boss;
+        bool bossDead;
+        ProtectorRing? activeRing;
+        int protectorRingsLeft;
+
+        Clock movementClock;
+        Vector2f movementDirection;
+        Time movementBreak;
+
+        const int enemySize = 32;
+        const int bossSize = 4 * 32;
+
+        Clock introClock;
+        Time introDeltaTime;
+        float introDeltaY;
+        int introCountdown;
+        
+        Sound sound, bossDeathSound;
+
+        List<Hostile> garbageList;
+
+        
+    }
+
     // -------------------------------------------------------------------
 
     class WaveController
@@ -678,7 +1027,8 @@ namespace SpaceInvadersClone
         
         public void Start()
         {
-            List<Action> models = new List<Action>() { StartWave, StartRain, StartMeteorShower };
+            //List<Action> models = new List<Action>() { StartWave, StartRain, StartMeteorShower };
+            List<Action> models = new List<Action>() { StartBoss };
             int choice = random.Next(models.Count);
             models[choice]();
 
@@ -744,12 +1094,32 @@ namespace SpaceInvadersClone
             }
         }
 
+        void StartBoss()
+        {
+            if (!isWave && !isBreak)
+            {
+                Game.PlayerInstance.Shield(Time.FromSeconds(5));
+                enemyGroup = new BossFight(Math.Max(1, (int)(waveNumber / 2)));
+                ((BossFight)enemyGroup).Arm();
+                ++waveNumber;
+                waveInitialSize = enemyGroup.EnemyList.Count;
+
+                isWave = true;
+                isBreak = false;
+                clock = new Clock();
+                // waveClock = clock; // ???
+                CalculateTimeBoundaries();
+                enemyGroup.MovementCooldown = Time.FromMilliseconds(150);
+                initialMovementCooldown = enemyGroup.MovementCooldown;
+            }
+        }
+
         void ArmEnemies()
         {
             if (enemyGroup == null) return;
             if (!enemyGroup.IsAggressive) return;
 
-            foreach (Enemy enemy in enemyGroup.EnemyList)
+            foreach (Hostile enemy in enemyGroup.EnemyList)
             {
                 int x = random.Next(4);
                 float vel = random.Next(200, 1001) / 100;
@@ -844,7 +1214,7 @@ namespace SpaceInvadersClone
                     isBreak = false;
 
                     Start();
-                    ArmEnemies();
+                    //ArmEnemies();
                 }
             }
             

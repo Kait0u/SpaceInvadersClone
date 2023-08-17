@@ -31,6 +31,11 @@ namespace SpaceInvadersClone
                 bullet.SetTargetted(this.velocity);
             }
 
+            else if (directed)
+            {
+                bullet.SetDirected(this.direction, this.velocity);
+            }
+
             else if (verticalSine)
             {
                 bullet.SetVerticalSine(this.velocity, this.peakToPeakAmpl);
@@ -65,12 +70,7 @@ namespace SpaceInvadersClone
 
         void Move()
         {
-            if (verticalDownfall)
-            {
-                position += velocity * direction;
-            }
-
-            else if (targetted)
+            if (verticalDownfall || targetted || directed)
             {
                 position += velocity * direction;
             }
@@ -99,6 +99,7 @@ namespace SpaceInvadersClone
 
             verticalDownfall = true;
             targetted = false;
+            directed = false;
             verticalSine = false;
             verticalCosine = false;
         }
@@ -112,6 +113,19 @@ namespace SpaceInvadersClone
 
             verticalDownfall = false;
             targetted = true;
+            directed = false;
+            verticalSine = false;
+            verticalCosine = false;
+        }
+
+        public void SetDirected(Vector2f direction, float velocity)
+        {
+            this.direction = direction / (float)Utilities.Utilities.Magnitude(direction);
+            this.velocity = velocity;
+
+            verticalDownfall = false;
+            targetted = false;
+            directed = true;
             verticalSine = false;
             verticalCosine = false;
         }
@@ -123,6 +137,7 @@ namespace SpaceInvadersClone
 
             verticalDownfall = false;
             targetted = false;
+            directed = false;
             verticalSine = true;
             verticalCosine = false;
         }
@@ -134,6 +149,7 @@ namespace SpaceInvadersClone
 
             verticalDownfall = false;
             targetted = false;
+            directed = false;
             verticalSine = false;
             verticalCosine = true;
         }
@@ -144,24 +160,13 @@ namespace SpaceInvadersClone
         public float X { get { return position.X; } set { position.X = value; } }
         public float Y { get { return position.Y; } set { position.Y = value; } }
 
-        string BulletMode
-        {
-            get 
-            {
-                if (verticalDownfall) return "verticalDownfall";
-                else if (targetted) return "targetted";
-                else if (verticalSine) return "verticalSine";
-                else if (verticalCosine) return "verticalCosine";
-                else return null;
-            }
-        }
-
         public int BulletModePoints
         {
             get
             {
                 if (verticalDownfall) return 100;
                 else if (targetted) return 500;
+                else if (directed) return 200;
                 else if (verticalSine) return 250;
                 else if (verticalCosine) return 250;
                 else return 0;
@@ -174,7 +179,7 @@ namespace SpaceInvadersClone
         Sprite sprite;
         
         float velocity, peakToPeakAmpl;
-        bool verticalDownfall, targetted, verticalSine, verticalCosine;
+        bool verticalDownfall, targetted, directed, verticalSine, verticalCosine;
 
         const int playerDamage = 20;
     }

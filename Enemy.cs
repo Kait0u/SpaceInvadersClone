@@ -2,6 +2,7 @@
 using SFML.Graphics;
 using SFML.System;
 using System.Diagnostics.Metrics;
+using System.Net;
 using static SpaceInvadersClone.Enemy;
 
 namespace SpaceInvadersClone
@@ -76,6 +77,11 @@ namespace SpaceInvadersClone
             shield = null;
         }
 
+        protected Vector2f PositionBullet()
+        {
+            return new Vector2f(X + XSize / 2, Y + YSize);
+        }
+
         public virtual float X { get => position.X; set { position.X = value; sprite.Position = position; RecalculateBonusSpawnPosition(); } }
         public virtual float Y { get => position.Y; set { position.Y = value; sprite.Position = position; RecalculateBonusSpawnPosition(); } }
         public virtual int XSize => (int)sprite.GetGlobalBounds().Width;
@@ -123,12 +129,6 @@ namespace SpaceInvadersClone
             bulletBP = new EnemyBullet(PositionBullet());
             isAggressive = true;
         }
-        
-        //public override void Draw()
-        //{
-        //    renderWindow.Draw(sprite);
-        //    lifebar?.Draw(renderWindow);
-        //}
 
         public override void Update()
         {
@@ -146,13 +146,10 @@ namespace SpaceInvadersClone
             }
         }
 
-        Vector2f PositionBullet()
-        {
-            return new Vector2f(X + XSize / 2, Y + YSize);
-        }
-
         public override void AddLifebar(LifebarPositions lbPosition)
         {
+            if (isProtected) return;
+
             lifebarPosition = lbPosition;
 
             Vector2f dim = new Vector2f(XSize, YSize * 0.2f);
@@ -230,18 +227,6 @@ namespace SpaceInvadersClone
             position += direction * speed;
             sprite.Rotation += rotationDirection * speed * 0.75f;
         }
-
-        public override void Draw()
-        {
-
-            //RectangleShape shape = new RectangleShape(new Vector2f(sprite.GetGlobalBounds().Width, sprite.GetGlobalBounds().Height));
-            //shape.Position = new Vector2f(sprite.GetGlobalBounds().Left, sprite.GetGlobalBounds().Top);
-            //shape.FillColor = Color.Red;
-            //renderWindow.Draw(shape);
-
-            renderWindow.Draw(sprite);
-            lifebar?.Draw(renderWindow);
-        }
         
         public override void AddLifebar(LifebarPositions lbPosition)
         {
@@ -289,5 +274,161 @@ namespace SpaceInvadersClone
 
         Sound sound;
 
+    }
+
+    class BossEnemy : Hostile
+    {
+        public BossEnemy(Vector2f startingPosition, int health, int weaponLv) : base(startingPosition, health, TextureBank.EnemyTexture3)
+        {
+            random = new Random();
+
+            sprite.Scale = new Vector2f(scale, scale);
+
+            isAggressive = true;
+            bulletBPs = new List<EnemyBullet>();
+            directedBulletBPs = new List<EnemyBullet>();
+            directedAngles = new Dictionary<EnemyBullet, float>();
+            straightBulletBP = new EnemyBullet(PositionBullet());
+            straightBulletBP.SetVerticalDownfall(bulletSpeed);
+            bulletBPs.Add(straightBulletBP);
+            targettedBulletBP = new EnemyBullet(PositionBullet());
+            targettedBulletBP.SetTargetted(bulletSpeed);
+            bulletBPs.Add(targettedBulletBP);
+
+            float deltaTheta = 360f / weaponLv;
+            for (int i = 0; i < weaponLv; ++i)
+            {
+                float theta = i * deltaTheta * Utilities.Utilities.DegRadConversionConstant;
+                Vector2f dir = new Vector2f((float)Math.Cos(theta), (float)Math.Sin(theta));
+
+                EnemyBullet b = new EnemyBullet(PositionBullet());
+                b.SetDirected(dir, bulletSpeed);
+                directedBulletBPs.Add(b);
+                directedAngles.Add(b, theta);
+                bulletBPs.Add(b);
+            }
+
+            sound = new Sound();
+
+            Shield();
+        }
+
+        public override void Update()
+        {
+            if (shield != null) UpdateShield();
+            if (lifebar != null) UpdateLifebar();
+
+            Vector2f pos = PositionBullet();
+            foreach (EnemyBullet b in bulletBPs) (b.X, b.Y) = (pos.X, pos.Y);
+
+            Console.WriteLine($"{position} + ({XSize / 2}, {YSize / 2}) --> {pos}");
+
+            foreach (EnemyBullet b in directedBulletBPs)
+            {
+                directedAngles[b] += revolutionSpeedDegrees * Utilities.Utilities.DegRadConversionConstant;
+                float theta = directedAngles[b];
+                Vector2f dir = new Vector2f((float)Math.Cos(theta), (float)Math.Sin(theta));
+                b.SetDirected(dir, bulletSpeed);
+            }
+
+        }
+
+        public void UpdateBulletSpawns()
+        {
+
+        }
+
+        public override void Shield()
+        {
+            isProtected = true;
+            shield = new CircleShape(XSize / 2f)
+            {
+                OutlineColor = new Color(223, 24, 0, 200),
+                OutlineThickness = 6,
+                FillColor = new Color(0, 0, 0, 0)
+            };
+        }
+
+        public override void Fire()
+        {
+            if ((double)health / maxHealth < 0.3f) FireDirected();
+            else
+            {
+                int x = random.Next(3);
+                if (x == 0) FireDirected();
+                else if (x == 1) FireStraight();
+                else if (x == 2) FireTargetted();
+            }
+        }
+
+        void FireStraight()
+        {
+            EnemyBullet bullet = straightBulletBP.Copy();
+            Game.EnemyBulletController.RegisterBullet(bullet);
+        }
+
+        void FireDirected()
+        {
+            foreach (EnemyBullet b in directedBulletBPs)
+            {
+                EnemyBullet bullet = b.Copy();
+                Game.EnemyBulletController.RegisterBullet(bullet);
+            }
+        }
+
+        void FireTargetted()
+        {
+            EnemyBullet bullet = targettedBulletBP.Copy();
+            Game.EnemyBulletController.RegisterBullet(bullet);
+        }
+
+        public override void AddLifebar(LifebarPositions lbPosition)
+        {
+            if (isProtected) return;
+
+            lifebarPosition = lbPosition;
+
+            Vector2f dim = new Vector2f(XSize, YSize * 0.2f);
+            float x = sprite.GetGlobalBounds().Left;
+            float y = sprite.GetGlobalBounds().Top;
+            if (lifebarPosition == LifebarPositions.Above) y = y - 2 - dim.Y;
+            else if (lifebarPosition == LifebarPositions.Below) y = y + dim.Y + 2;
+            Vector2f lifebarTopLeftCorner = new Vector2f(x, y);
+
+            lifebar = new Lifebar(lifebarTopLeftCorner, dim, health / maxHealth);
+
+            lifebarClock = new Clock();
+        }
+
+        void UpdateLifebar()
+        {
+            if (lifebarClock.ElapsedTime >= lifebarTime)
+            {
+                RemoveLifebar();
+                return;
+            }
+
+            lifebar.Percentage = (float)health / maxHealth;
+
+            lifebar.X = X;
+            if (lifebarPosition == LifebarPositions.Above) lifebar.Y = Y - 2 - lifebar.Dimensions.Y;
+            else if (lifebarPosition == LifebarPositions.Below) lifebar.Y = Y + lifebar.Dimensions.Y + 2;
+        }
+
+        public override int PointValue => health * 5000;
+
+        Game game;
+        Random random;
+
+        List<EnemyBullet> directedBulletBPs;
+        Dictionary<EnemyBullet, float> directedAngles;
+        const float revolutionSpeedDegrees = 15f;
+        EnemyBullet straightBulletBP, targettedBulletBP;
+        List<EnemyBullet> bulletBPs;
+
+
+        Sound sound;
+        const int scale = 4;
+        const int bulletSpeed = 8;
     }
 }

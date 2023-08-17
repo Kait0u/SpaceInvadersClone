@@ -36,6 +36,7 @@ namespace SpaceInvadersClone
             window.KeyPressed += escPauseMenu;
 
             score = 0;
+            bossesSlain = 0;
 
             infoBar = new InfoBar();
 
@@ -132,6 +133,7 @@ namespace SpaceInvadersClone
         static BulletController<EnemyBullet> enemyBulletController = new BulletController<EnemyBullet>();
         static WaveController waveController = new WaveController();
         static BonusController bonusController = new BonusController();
+        static int bossesSlain = 0;
 
         public static RenderWindow GameWindowInstance { get { return gameWindowInstance; } }
         public static Player PlayerInstance { get { return player; } }
@@ -140,6 +142,8 @@ namespace SpaceInvadersClone
         public static BulletController<EnemyBullet> EnemyBulletController { get { return enemyBulletController; } }
         public static WaveController WaveController { get { return waveController; } }
         public static BonusController BonusController { get { return bonusController; } }
+
+        public static int BossesSlain { get {  return bossesSlain; } set { bossesSlain = value; } }
 
     }
 }

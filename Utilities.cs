@@ -21,6 +21,10 @@ namespace Utilities
         { 
             return Math.Sqrt(v.X * v.X + v.Y * v.Y);
         }
+
+        public static float DegRadConversionConstant => degRadConversionCostant;
+
+        const float degRadConversionCostant = 0.0174532925199432957692369076848861271344f;
     }
 
     class Die
