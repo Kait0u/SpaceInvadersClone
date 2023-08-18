@@ -1273,7 +1273,5 @@ namespace SpaceInvadersClone
         Time attackBreak, initialMovementCooldown;
 
         List<Hostile> garbageList;
-
-        Sound sound;
     }
 }
