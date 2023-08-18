@@ -1,4 +1,4 @@
-﻿using SFML.Audio;
+﻿
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -10,7 +10,6 @@ namespace SpaceInvadersClone
         public MainMenu(RenderWindow window) 
         { 
             this.window = window;
-            sound = new Sound();
 
             controls = (sender, e) =>
             {
@@ -143,30 +142,28 @@ namespace SpaceInvadersClone
 
         void MoveUp()
         {
-            sound.SoundBuffer = SoundBank.MoveSelection;
 
             --selected;
             selected = (Options)Utilities.Utilities.Modulus((int)selected, options.Count());
 
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            //sound.Play();
+            //Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(SoundBank.MoveSelection);
         }
 
         void MoveDown() 
         {
-            sound.SoundBuffer = SoundBank.MoveSelection;
 
             ++selected;
             selected = (Options)Utilities.Utilities.Modulus((int)selected, options.Count());
 
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            //sound.Play();
+            //Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(SoundBank.MoveSelection);
         }
 
         void Execute()
         {
-            sound.SoundBuffer = SoundBank.Select;
-
             if (selected == Options.Play) 
             {
                 Application.State = Application.ApplicationStates.Game;
@@ -180,9 +177,7 @@ namespace SpaceInvadersClone
                 Application.State = Application.ApplicationStates.Terminated;
                 selectionExecuted = true;
             }
-
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(SoundBank.Select);
         }
 
         RenderWindow window;
@@ -195,7 +190,5 @@ namespace SpaceInvadersClone
         bool selectionExecuted;
 
         EventHandler<KeyEventArgs> controls;
-
-        Sound sound;
     }
 }

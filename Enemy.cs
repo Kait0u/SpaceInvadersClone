@@ -1,4 +1,4 @@
-﻿using SFML.Audio;
+﻿
 using SFML.Graphics;
 using SFML.System;
 using System.Diagnostics.Metrics;
@@ -124,7 +124,6 @@ namespace SpaceInvadersClone
         public Enemy(Vector2f startingPosition, int health, Texture texture): base(startingPosition, health, texture)
         {
             renderWindow = Game.GameWindowInstance;
-            sound = new Sound();
 
             bulletBP = new EnemyBullet(PositionBullet());
             isAggressive = true;
@@ -185,8 +184,6 @@ namespace SpaceInvadersClone
         }
 
         public override int PointValue { get { return pointValue * bulletBP.BulletModePoints; } }
-
-        Sound sound;
     }
 
     class Meteor: Hostile
@@ -207,8 +204,6 @@ namespace SpaceInvadersClone
             rotationDirection = random.Next(2) * 2 - 1;
 
             isAggressive = false;
-
-            sound = new Sound();
         }
 
         public override void Update()
@@ -271,9 +266,6 @@ namespace SpaceInvadersClone
         Vector2f direction;
         int rotationDirection;
         float speed;
-
-        Sound sound;
-
     }
 
     class BossEnemy : Hostile
@@ -307,8 +299,6 @@ namespace SpaceInvadersClone
                 directedAngles.Add(b, theta);
                 bulletBPs.Add(b);
             }
-
-            sound = new Sound();
 
             Shield();
         }
@@ -419,8 +409,6 @@ namespace SpaceInvadersClone
         EnemyBullet straightBulletBP, targettedBulletBP;
         List<EnemyBullet> bulletBPs;
 
-
-        Sound sound;
         const int scale = 4;
         const int bulletSpeed = 8;
     }

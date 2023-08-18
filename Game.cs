@@ -58,7 +58,6 @@ namespace SpaceInvadersClone
 
                     if (Application.State != Application.ApplicationStates.Game)
                     {
-                        player.Sound.Stop();
                         break;
                     }
 

@@ -1,4 +1,4 @@
-﻿using SFML.Audio;
+﻿
 using SFML.Graphics;
 using SFML.Window;
 using System.Data;
@@ -12,7 +12,10 @@ namespace SpaceInvadersClone
             gameWindowInstance.Closed += (sender, args) => gameWindowInstance.Close();
             gameWindowInstance.SetVerticalSyncEnabled(true);
             soundController = new SoundController();
-            soundControllerThread = new Thread(() => { while (gameWindowInstance.IsOpen) SoundController.Update(); });
+            soundControllerThread = new Thread(() => { while (gameWindowInstance.IsOpen) soundController.Update(); });
+
+            View view = gameWindowInstance.DefaultView;
+            gameWindowInstance.SetView(view);
         }
 
         public void Run()
@@ -44,7 +47,8 @@ namespace SpaceInvadersClone
         }
 
         static VideoMode videoMode = new VideoMode(width, height);
-        static RenderWindow gameWindowInstance = new RenderWindow(videoMode, title, Styles.Close);
+        static RenderWindow gameWindowInstance = new RenderWindow(videoMode, title, Styles.Titlebar);
+        
         public static RenderWindow GameWindowInstance { get { return gameWindowInstance; } }
 
         public enum ApplicationStates
@@ -59,9 +63,8 @@ namespace SpaceInvadersClone
         public static ApplicationStates State { get { return state; } set { state = value; } }
 
         static SoundController soundController = new SoundController();
-        Thread soundControllerThread;
+        Thread soundControllerThread, newSoundControllerThread;
         public static SoundController SoundController { get {  return soundController; } }
-
 
         const int width = 1024, height = 768;
         const string title = "Space Invaders";

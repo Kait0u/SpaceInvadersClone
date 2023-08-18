@@ -1,9 +1,7 @@
-﻿using SFML.Audio;
+﻿
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using System;
-using System.Collections.Generic;
 
 namespace SpaceInvadersClone
 {
@@ -21,7 +19,6 @@ namespace SpaceInvadersClone
             position = new Vector2f(0, 0);
             bulletBP = new PlayerBullet(new Vector2f(X + XSize / 2, Y));
             clock = new Clock();
-            sound = new Sound();
 
             weaponLevel = 1;
             baseFireRate = 4f;
@@ -31,7 +28,6 @@ namespace SpaceInvadersClone
 
             currHealth = health;
             isDead = false;
-            deathSound = new Sound(SoundBank.PlayerExplosion);
 
             isProtected = false;
             shieldClock = new Clock();
@@ -55,9 +51,9 @@ namespace SpaceInvadersClone
             if (currHealth <= 0) isDead = true;
             if (isDead)
             {
-                deathSound.Play();
-                Application.SoundController.RegisterSound(sound);
-                while (deathSound.Status == SoundStatus.Playing) { }
+                Application.SoundController.Play(SoundBank.PlayerExplosion);
+                Clock wait = new Clock();
+                while (wait.ElapsedTime == Time.FromSeconds(1));
                 return;
             }
 
@@ -169,15 +165,12 @@ namespace SpaceInvadersClone
         {
             if (canFire)
             {
-                sound.SoundBuffer = SoundBank.PlayerFire;
-
                 PlayerBullet bullet = bulletBP.Copy();
                 Game.PlayerBulletController.RegisterBullet(bullet);
                 canFire = false;
                 clock.Restart();
 
-                sound.Play();
-                Application.SoundController.RegisterSound(sound);
+                Application.SoundController.Play(SoundBank.PlayerFire);
             }
         }
 
@@ -185,16 +178,13 @@ namespace SpaceInvadersClone
         {
             if (isProtected)
             {
-                Application.SoundController.RegisterPlaySound(new Sound(SoundBank.ShieldProtect));
+                Application.SoundController.Play(SoundBank.ShieldProtect);
                 return;
             }
 
-            sound.SoundBuffer = SoundBank.PlayerDamaged;
-
             CurrentHealth -= damage;
 
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(SoundBank.PlayerDamaged);
         }
 
         public void Heal(int amount)
@@ -234,11 +224,11 @@ namespace SpaceInvadersClone
                 WeaponLevel -= healAmount;
                 CurrentHealth += healAmount;
 
-                Application.SoundController.RegisterPlaySound(new Sound(SoundBank.PlayerSacrifice));
+                Application.SoundController.Play(SoundBank.PlayerSacrifice);
             }
             else
             {
-                Application.SoundController.RegisterPlaySound(new Sound(SoundBank.Error));
+                Application.SoundController.Play(SoundBank.Error);
             }
         }
 
@@ -257,7 +247,6 @@ namespace SpaceInvadersClone
         public bool LostControl { get { return controlLost; } }
 
         public Sprite PlayerSprite { get { return  sprite; } }
-        public Sound Sound { get { return sound; } }
 
         Sprite sprite;
         RenderWindow renderWindow;
@@ -282,9 +271,6 @@ namespace SpaceInvadersClone
 
         bool controlLost;
         Vector2f forcedPosition, fullForcedDirection, forcedDirection;
-
-        Sound sound;
-        Sound deathSound;
 
         const float revSqrt2 = 0.7071067811865475244008443621048490392848359376884740365883398689f;
     }

@@ -1,4 +1,6 @@
-﻿using SFML.Audio;
+﻿using NAudio.Vorbis;
+using NAudio.Wave;
+
 using SFML.Graphics;
 using SFML.System;
 using System;
@@ -64,7 +66,6 @@ namespace SpaceInvadersClone
         {
             random = new Random();
             renderWindow = Game.GameWindowInstance;
-            sound = new Sound();
             movementClock = new Clock();
             movementBreak = Time.FromMilliseconds(500);
             enemies = base.EnemyList;
@@ -136,9 +137,7 @@ namespace SpaceInvadersClone
             if (direction == null) return;
             if (movementClock.ElapsedTime < movementBreak) return;
 
-            sound.SoundBuffer = SoundBank.EnemyMove;
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(SoundBank.EnemyMove);
 
             foreach (Enemy enemy in enemies)
             {
@@ -221,9 +220,7 @@ namespace SpaceInvadersClone
             { 
                 foreach (Enemy enemy in enemies)  enemy.Y += introDeltaY;
 
-                sound.SoundBuffer = SoundBank.EnemyMove;
-                sound.Play();
-                Application.SoundController.RegisterSound(sound);
+                Application.SoundController.Play(SoundBank.EnemyMove);
 
                 --introCountdown;
                 introClock.Restart();
@@ -245,7 +242,7 @@ namespace SpaceInvadersClone
                 enemy.Shield();
             }
 
-            Application.SoundController.RegisterPlaySound(new Sound(SoundBank.WaveEntrance));
+            Application.SoundController.Play(SoundBank.WaveEntrance);
 
             introClock = new Clock();
             introDeltaTime = movementBreak / 4f;
@@ -283,8 +280,6 @@ namespace SpaceInvadersClone
         Time introDeltaTime;
         float introDeltaY;
         int introCountdown;
-
-        Sound sound;
     }
 
     class Rain: EnemyGroup
@@ -368,8 +363,6 @@ namespace SpaceInvadersClone
             movementBreak = Time.FromMilliseconds(300);
 
             garbageList = new List<Droplet>();
-
-            sound = new Sound(SoundBank.EnemyMove);
         }
 
         public override void Update()
@@ -405,8 +398,7 @@ namespace SpaceInvadersClone
         {
             if (movementClock.ElapsedTime < movementBreak) return;
 
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(SoundBank.EnemyMove);
 
             foreach (Droplet droplet in movingDroplets)
             {
@@ -427,7 +419,7 @@ namespace SpaceInvadersClone
 
             introDuration = Time.FromSeconds(1.5f);
             introClock = new Clock();
-            Application.SoundController.RegisterPlaySound(new Sound(SoundBank.RainfallEntrance));
+            Application.SoundController.Play(SoundBank.RainfallEntrance);
         }
 
         public override Time MovementCooldown { get { return this.movementBreak; } set { this.movementBreak = value; } }
@@ -446,8 +438,6 @@ namespace SpaceInvadersClone
 
         Clock movementClock, dropletDeployClock;
         Time movementBreak;
-
-        Sound sound;
 
         Vector2f topLeftCorner, bottomRightCorner, direction;
 
@@ -562,7 +552,6 @@ namespace SpaceInvadersClone
 
             movementClock = new Clock();
             meteorDeployClock = new Clock();
-            sound = new Sound(SoundBank.EnemyMove);
         }
 
         public override void Update()
@@ -586,8 +575,7 @@ namespace SpaceInvadersClone
         {
             if (movementClock.ElapsedTime < movementBreak) return;
 
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(SoundBank.EnemyMove);
 
             foreach (Meteor meteor in movingMeteors)
             {
@@ -608,7 +596,7 @@ namespace SpaceInvadersClone
 
             introDuration = Time.FromSeconds(1f);
             introClock = new Clock();
-            Application.SoundController.RegisterPlaySound(new Sound(SoundBank.MeteorEntrance));
+            Application.SoundController.Play(SoundBank.MeteorEntrance);
         }
 
         public override List<Hostile> EnemyList => this.enemies;
@@ -631,8 +619,6 @@ namespace SpaceInvadersClone
 
         Clock introClock;
         Time introDuration;
-
-        Sound sound;
 
         const int maxEnemySize = 4 * 32;
     }
@@ -727,7 +713,8 @@ namespace SpaceInvadersClone
                 {
                     enRoute = false;
                     UnshieldAll();
-                    reinforcementsSound.Loop = false;
+                    Application.SoundController.Stop(reinforcementsSound);
+
                     return;
                 }
 
@@ -737,7 +724,7 @@ namespace SpaceInvadersClone
                     ringCenter.Y += enRouteDeltaY;
                     ringCenter.X = CalculateRingCenter().X;
 
-                    Application.SoundController.RegisterPlaySound(new Sound(SoundBank.EnemyMove));
+                    Application.SoundController.Play(SoundBank.EnemyMove);
 
                     --enRouteCountdown;
                     enRouteClock.Restart();
@@ -784,8 +771,8 @@ namespace SpaceInvadersClone
             int enRouteCountdown; // 40
             public int EnRouteCountdown { get { return enRouteCountdown; } set { enRouteCountdown = value; } }
 
-            Sound reinforcementsSound = new Sound(SoundBank.BossReinforcements) { Loop = true };
-            public Sound ReinforcementsSound => reinforcementsSound;
+            DirectSoundOut? reinforcementsSound;
+            public DirectSoundOut ReinforcementsSound { get => reinforcementsSound; set => reinforcementsSound = value; }
 
             static Texture[] textures = new Texture[2] { TextureBank.EnemyTexture1, TextureBank.EnemyTexture2 };
 
@@ -795,7 +782,6 @@ namespace SpaceInvadersClone
         {
             random = new Random();
             renderWindow = Game.GameWindowInstance;
-            sound = new Sound();
             movementClock = new Clock();
             movementBreak = Time.FromMilliseconds(500);
             enemies = base.EnemyList;
@@ -815,16 +801,14 @@ namespace SpaceInvadersClone
             foreach (Enemy enemy in activeRing.EnemyList) enemies.Add(enemy);
 
             this.healthUnits = healthUnits;
-            bossDeathSound = new Sound(SoundBank.BossDeath);
-            bossBrokenShieldSound = new Sound(SoundBank.BossShieldBroken);
         }
 
         public override void Update()
         {
             if (bossDead) return;
             if (boss.EnemyHealth <= 0) 
-            { 
-                bossDeathSound.Play(); 
+            {
+                Application.SoundController.Play(SoundBank.BossDeath);
                 ++Game.BossesSlain; 
                 for (int i = 0; i < 3; ++i) 
                     Game.BonusController.IssuePowerup(
@@ -836,7 +820,7 @@ namespace SpaceInvadersClone
 
             if (intro) { Intro(); activeRing.Update(); return; }
 
-            if (activeRing != null && activeRing.EnemyList.Count == 0 && protectorRingsLeft == 0) { activeRing = null; bossBrokenShieldSound.Play(); }
+            if (activeRing != null && activeRing.EnemyList.Count == 0 && protectorRingsLeft == 0) { activeRing = null; Application.SoundController.Play(SoundBank.BossShieldBroken); }
             else if (activeRing != null && activeRing.EnemyList.Count == 0 && protectorRingsLeft > 0) CallProtectors();
 
             if (activeRing == null) { boss.Unshield(); }
@@ -870,7 +854,7 @@ namespace SpaceInvadersClone
 
         void CallProtectors()
         {
-            if (protectorRingsLeft <= 0) { activeRing = null; bossBrokenShieldSound.Play(); return; }
+            if (protectorRingsLeft <= 0) { activeRing = null; Application.SoundController.Play(SoundBank.BossShieldBroken); return; }
 
             activeRing = new ProtectorRing(boss, 6 + Game.BossesSlain, healthUnits);
             --protectorRingsLeft;
@@ -888,7 +872,7 @@ namespace SpaceInvadersClone
             activeRing.EnRouteDeltaY = displacementY / activeRing.EnRouteCountdown;
             
             Arm();
-            activeRing.ReinforcementsSound.Play();
+            activeRing.ReinforcementsSound = Application.SoundController.Play(new LoopStream(SoundBank.BossReinforcements));
         }
 
         public override void Intro()
@@ -904,9 +888,7 @@ namespace SpaceInvadersClone
             {
                 foreach (Hostile enemy in enemies) enemy.Y += introDeltaY;
 
-                sound.SoundBuffer = SoundBank.EnemyMove;
-                sound.Play();
-                Application.SoundController.RegisterSound(sound);
+                Application.SoundController.Play(SoundBank.EnemyMove);
 
                 --introCountdown;
                 introClock.Restart();
@@ -928,7 +910,7 @@ namespace SpaceInvadersClone
                 enemy.Shield();
             }
 
-            Application.SoundController.RegisterPlaySound(new Sound(SoundBank.BossEntrance));
+            Application.SoundController.Play(SoundBank.BossEntrance);
 
             introClock = new Clock();
             introDeltaTime = movementBreak / 4f;
@@ -988,8 +970,6 @@ namespace SpaceInvadersClone
         Time introDeltaTime;
         float introDeltaY;
         int introCountdown;
-        
-        Sound sound, bossDeathSound, bossBrokenShieldSound;
 
         List<Hostile> garbageList;
 
@@ -1009,8 +989,6 @@ namespace SpaceInvadersClone
             isBreak = false;
 
             garbageList = new List<Hostile>();
-
-            sound = new Sound();
         }
 
         public void Reset()
@@ -1022,8 +1000,6 @@ namespace SpaceInvadersClone
             isBreak = false;
 
             garbageList = new List<Hostile>();
-
-            sound = new Sound();
         }
 
         public void StartWithBreak()
@@ -1168,7 +1144,7 @@ namespace SpaceInvadersClone
                         enemy.AddLifebar(Enemy.LifebarPositions.Above);
 
                         Game.PlayerInstance.Damage(40);
-                        Application.SoundController.RegisterPlaySound(new Sound(SoundBank.PlayerExplosion));
+                        Application.SoundController.Play(SoundBank.PlayerExplosion);
                         Game.PlayerInstance.ForceMove(Game.PlayerSpawnPoint);
                         continue;
                     }
@@ -1186,12 +1162,9 @@ namespace SpaceInvadersClone
                     {
                         int attackerIndex = random.Next(enemyGroup.EnemyList.Count);
 
-                        sound.SoundBuffer = SoundBank.EnemyFire;
-
                         enemyGroup.EnemyList[attackerIndex].Fire();
 
-                        sound.Play();
-                        Application.SoundController.RegisterSound(sound);
+                        Application.SoundController.Play(SoundBank.EnemyFire);
 
                         CalculateTimeBoundaries();
                         attackBreak = Time.FromMilliseconds(random.Next(timeBoundaryLeft, timeBoundaryRight + 1));
@@ -1241,16 +1214,16 @@ namespace SpaceInvadersClone
         {
             if (enemy.IsProtected) 
             {
-                Application.SoundController.RegisterPlaySound(new Sound(SoundBank.ShieldProtect));
+                Application.SoundController.Play(SoundBank.ShieldProtect);
                 return;
             }
 
-            sound.SoundBuffer = SoundBank.EnemyDamaged;
+            VorbisWaveReader sound = SoundBank.EnemyDamaged;
 
             enemy.EnemyHealth -= damageValue;
             if (enemy.EnemyHealth <= 0)
             {
-                sound.SoundBuffer = SoundBank.EnemyExplosion;
+                sound = SoundBank.EnemyExplosion;
 
                 Kill(enemy);
                 Game.Score += (ulong)enemy.PointValue;
@@ -1266,8 +1239,7 @@ namespace SpaceInvadersClone
                     Game.BonusController.IssueMedkit(enemy.BonusSpawnPoint);
             }
 
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(sound);
         }
 
         public void Kill(Hostile enemy)

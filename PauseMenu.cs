@@ -1,4 +1,4 @@
-﻿using SFML.Audio;
+﻿
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -13,7 +13,6 @@ namespace SpaceInvadersClone
             window = renderWindow;
             this.game = game;
 
-            sound = new Sound(SoundBank.MoveSelection);
             drawables = new List<Drawable>();
 
             Vector2u windowSize = window.Size;
@@ -175,41 +174,31 @@ namespace SpaceInvadersClone
 
         void MoveUp()
         {
-            sound.SoundBuffer = SoundBank.MoveSelection;
-
             --selected;
             selected = (Options)Utilities.Utilities.Modulus((int)selected, options.Count());
 
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(SoundBank.MoveSelection);
         }
 
         void MoveDown()
         {
-            sound.SoundBuffer = SoundBank.MoveSelection;
-
             ++selected;
             selected = (Options)Utilities.Utilities.Modulus((int)selected, options.Count());
 
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(SoundBank.MoveSelection);
         }
 
         void Execute()
         {
-            sound.SoundBuffer = SoundBank.Select;
-
             actions[selected]();
             selectionExecuted = true;
 
-            sound.Play();
-            Application.SoundController.RegisterSound(sound);
+            Application.SoundController.Play(SoundBank.Select);
         }
 
         RenderWindow window;
         Game game;
         Sprite background;
-        Sound sound;
 
         bool selectionExecuted;
 

@@ -1,4 +1,4 @@
-﻿using SFML.Audio;
+﻿
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -11,7 +11,6 @@ namespace SpaceInvadersClone
         { 
             this.window = window;
             clock = new Clock();
-            sound = new Sound(SoundBank.GameOver) { Loop = false };
 
             background = new RectangleShape()
             {
@@ -49,9 +48,7 @@ namespace SpaceInvadersClone
         {
             clock.Restart();
 
-            sound = new Sound(SoundBank.GameOver) { Loop = false };
-            Application.SoundController.RegisterSound(sound);
-            sound.Play();
+            Application.SoundController.Play(SoundBank.GameOver);
 
             while (window.IsOpen)
             {
@@ -63,10 +60,8 @@ namespace SpaceInvadersClone
 
                     if (skipped)
                     {
-                        sound.Stop();
-                        sound.SoundBuffer = SoundBank.Select;
                         Application.State = Application.ApplicationStates.MainMenu;
-                        sound.Play();
+                        Application.SoundController.Play(SoundBank.Select);
                         break;
                     }
                 }
@@ -91,8 +86,6 @@ namespace SpaceInvadersClone
 
         RectangleShape background;
         Text gameOverText, gameOverInstruction;
-
-        Sound sound;
 
         bool skipped;
         static readonly Time waitTime = Time.FromSeconds(5);

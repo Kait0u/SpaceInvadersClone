@@ -1,6 +1,6 @@
 ﻿
 
-using SFML.Audio;
+
 using SFML.Graphics;
 using SFML.System;
 
@@ -13,7 +13,6 @@ namespace SpaceInvadersClone
             renderWindow = Application.GameWindowInstance;
             player = Game.PlayerInstance;
             random = new Random();
-            sound = new Sound();
             
             bonusList = new List<Bonus>();
             garbageList = new List<Bonus>();
@@ -22,7 +21,6 @@ namespace SpaceInvadersClone
         public void Reset()
         {
             random = new Random();
-            sound = new Sound();
 
             bonusList = new List<Bonus>();
             garbageList = new List<Bonus>();
@@ -61,13 +59,10 @@ namespace SpaceInvadersClone
                 
                 if (touchesPlayer)
                 {
-                    sound.SoundBuffer = SoundBank.Powerup;
-
                     bonus.Action(player);
                     DeleteBonus(bonus);
 
-                    sound.Play();
-                    Application.SoundController.RegisterSound(sound);
+                    Application.SoundController.Play(SoundBank.Powerup);
                 }
                 else if (isOffScreen) DeleteBonus(bonus);
             }
@@ -86,7 +81,6 @@ namespace SpaceInvadersClone
         RenderWindow renderWindow;
         Player player;
         Random random;
-        Sound sound;
 
         List<Bonus> bonusList, garbageList;
     }

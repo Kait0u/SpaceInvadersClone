@@ -1,72 +1,122 @@
-﻿using SFML.Audio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NAudio.Vorbis;
+using NAudio.Wave;
+
 
 namespace SpaceInvadersClone
 {
-    internal class SoundController
+    class LoopStream : WaveStream
     {
-        public SoundController() 
-        { 
-            soundList = new List<Sound>();
-            garbageList = new List<Sound>();
-            soundQueue = new Queue<Sound>();
+        // Heavily inspired by: https://mark-dot-net.blogspot.com/2009/10/looped-playback-in-net-with-naudio.html
+
+        public LoopStream(WaveStream source)
+        {
+            this.sourceStream = source;
+            this.EnableLooping = true;
+        }
+
+        public bool EnableLooping { get; set; }
+
+        public override WaveFormat WaveFormat
+        {
+            get => sourceStream.WaveFormat;
+        }
+
+        public override long Length
+        {
+            get => sourceStream.Length;
+        }
+
+        public override long Position
+        {
+            get => sourceStream.Position; 
+            set => sourceStream.Position = value; 
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            int totalBytesRead = 0;
+
+            while (totalBytesRead < count)
+            {
+                int bytesRead = sourceStream.Read(buffer, offset + totalBytesRead, count - totalBytesRead);
+                if (bytesRead == 0)
+                {
+                    if (sourceStream.Position == 0 || !EnableLooping)
+                    {
+                        // something wrong with the source stream
+                        break;
+                    }
+                    // loop
+                    sourceStream.Position = 0;
+                }
+                totalBytesRead += bytesRead;
+            }
+            return totalBytesRead;
+        }
+
+        WaveStream sourceStream;
+    }
+
+    class SoundController
+    {
+        public SoundController()
+        {
+            soundList = new List<DirectSoundOut>();
+            garbageList = new List<DirectSoundOut>();
+            soundQueue = new Queue<DirectSoundOut>();
         }
 
         public void Update()
         {
             if (soundList.Count <= 0 && soundQueue.Count <= 0) return;
 
-            foreach (Sound sound in garbageList)
+            foreach (DirectSoundOut waveOut in garbageList)
             {
-                soundList.Remove(sound);
+                waveOut.Stop();
+                waveOut.Dispose();
+                soundList.Remove(waveOut);
             }
 
             garbageList.Clear();
 
             lock (soundQueue)
             {
-                while (soundQueue.Count > 0) soundList.Add(soundQueue.Dequeue());
-            }
-
-            foreach (Sound sound in soundList)
-            {
-                if (sound != null && sound.Status == SoundStatus.Stopped)
+                while (soundQueue.Count > 0)
                 {
-                    garbageList.Add(sound);
+                    var temp = soundQueue.Dequeue();
+                    soundList.Add(temp);
+                    temp.Play();
                 }
             }
 
-
-        }
-
-        public void RegisterSound(Sound sound)
-        {
-            soundQueue.Enqueue(sound);
-        }
-
-        public void RegisterCopySound(Sound sound)
-        {
-            Sound s = new Sound(sound.SoundBuffer);
-            RegisterSound(s);
-        }
-
-        public void RegisterPlaySound(Sound sound)
-        {
-            if (soundList.Count < 255) // Adhere to SFML recommendations
+            foreach (DirectSoundOut waveOut in soundList)
             {
-                Sound s = new Sound(sound.SoundBuffer);
-                s.Play();
-                RegisterSound(s);
+                if (waveOut != null && waveOut.PlaybackState == PlaybackState.Stopped) garbageList.Add(waveOut);
             }
+
+            //Console.WriteLine();
         }
 
+        public DirectSoundOut Play(WaveStream stream)
+        {
+            DirectSoundOut waveOut = new DirectSoundOut();
+            waveOut.Init(stream);
+            lock(soundQueue) soundQueue.Enqueue(waveOut);
+            // It will play when dequeued
 
-        Queue<Sound> soundQueue;
-        List<Sound> soundList, garbageList;
+            return waveOut;
+        }
+
+        public void Stop(DirectSoundOut waveOut)
+        {
+            waveOut.Stop();
+        }
+
+        public static AudioFileReader LoadFromPath(string path) => new AudioFileReader(path);
+        public static VorbisWaveReader LoadOggFromPath(string path) => new VorbisWaveReader(path);
+
+        List<DirectSoundOut> soundList, garbageList;
+        Queue<DirectSoundOut> soundQueue;
 
     }
 }

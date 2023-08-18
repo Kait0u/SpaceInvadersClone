@@ -1,73 +1,74 @@
-﻿using SFML.Audio;
+﻿using NAudio.Vorbis;
+
 
 namespace SpaceInvadersClone
 {
     static class SoundBank
     {
         static string assetPath = "./Assets/Sounds/";
-        
-        static SoundBuffer moveSelection = new SoundBuffer(assetPath + "move_selection.ogg");
-        static SoundBuffer select = new SoundBuffer(assetPath + "select.ogg");
-        static SoundBuffer error = new SoundBuffer(assetPath + "error.ogg");
 
-        static SoundBuffer gameOver = new SoundBuffer(assetPath + "gameover.ogg");
+        static string moveSelection = assetPath + "move_selection.ogg";
+        static string select = assetPath + "select.ogg";
+        static string error = assetPath + "error.ogg";
 
-        static SoundBuffer playerFire = new SoundBuffer(assetPath + "player_fire.ogg");
-        static SoundBuffer playerDamaged = new SoundBuffer(assetPath + "player_damaged.ogg");
-        static SoundBuffer playerCrash = new SoundBuffer(assetPath + "player_crash.ogg");
-        static SoundBuffer playerExplosion = new SoundBuffer(assetPath + "player_explosion.ogg");
-        static SoundBuffer playerSacrifice = new SoundBuffer(assetPath + "sacrifice.ogg");
+        static string gameOver = assetPath + "gameover.ogg";
 
-        static SoundBuffer powerup = new SoundBuffer(assetPath + "powerup.ogg");
-        static SoundBuffer shieldProtect = new SoundBuffer(assetPath + "shield_protect.ogg");
+        static string playerFire = assetPath + "player_fire.ogg";
+        static string playerDamaged = assetPath + "player_damaged.ogg";
+        static string playerCrash = assetPath + "player_crash.ogg";
+        static string playerExplosion = assetPath + "player_explosion.ogg";
+        static string playerSacrifice = assetPath + "sacrifice.ogg";
 
-        static SoundBuffer enemyFire = new SoundBuffer(assetPath + "enemy_fire.ogg");
-        static SoundBuffer enemyMove = new SoundBuffer(assetPath + "enemy_move.ogg");
-        static SoundBuffer enemyDamaged = new SoundBuffer(assetPath + "enemy_damaged.ogg");
-        static SoundBuffer enemyExplosion = new SoundBuffer(assetPath + "enemy_explosion.ogg");
+        static string powerup = assetPath + "powerup.ogg";
+        static string shieldProtect = assetPath + "shield_protect.ogg";
 
-        static SoundBuffer bossReinforcements = new SoundBuffer(assetPath + "boss_reinforcements.ogg");
-        static SoundBuffer bossDeath = new SoundBuffer(assetPath + "boss_death.ogg");
-        static SoundBuffer bossShieldBroken = new SoundBuffer(assetPath + "boss_shieldbroken.ogg");
+        static string enemyFire = assetPath + "enemy_fire.ogg";
+        static string enemyMove = assetPath + "enemy_move.ogg";
+        static string enemyDamaged = assetPath + "enemy_damaged.ogg";
+        static string enemyExplosion = assetPath + "enemy_explosion.ogg";
+
+        static string bossReinforcements = assetPath + "boss_reinforcements.ogg";
+        static string bossDeath = assetPath + "boss_death.ogg";
+        static string bossShieldBroken = assetPath + "boss_shieldbroken.ogg";
 
         // Intros:
-        static SoundBuffer waveEntrance = new SoundBuffer(assetPath + "wave_entrance.ogg");
-        static SoundBuffer rainfallEntrance = new SoundBuffer(assetPath + "rainfall_entrance.ogg");
-        static SoundBuffer meteorEntrance = new SoundBuffer(assetPath + "meteor_entrance.ogg");
-        static SoundBuffer bossEntrance = new SoundBuffer(assetPath + "boss_entrance.ogg");
+        static string waveEntrance = assetPath + "wave_entrance.ogg";
+        static string rainfallEntrance = assetPath + "rainfall_entrance.ogg";
+        static string meteorEntrance = assetPath + "meteor_entrance.ogg";
+        static string bossEntrance = assetPath + "boss_entrance.ogg";
 
 
 
         // Accessors
 
-        public static SoundBuffer MoveSelection { get { return moveSelection; } }
-        public static SoundBuffer Select { get { return select; } }
-        public static SoundBuffer Error { get { return error; } }
+        public static VorbisWaveReader MoveSelection => new VorbisWaveReader(moveSelection);
+        public static VorbisWaveReader Select => new VorbisWaveReader(select);
+        public static VorbisWaveReader Error => new VorbisWaveReader(error);
 
-        public static SoundBuffer GameOver { get { return gameOver; } }
+        public static VorbisWaveReader GameOver => new VorbisWaveReader(gameOver);
 
-        public static SoundBuffer PlayerFire { get {  return playerFire; } }
-        public static SoundBuffer PlayerDamaged { get { return playerDamaged; }}
-        public static SoundBuffer PlayerCrash { get {  return playerCrash; } }
-        public static SoundBuffer PlayerExplosion { get { return playerExplosion; } }
-        public static SoundBuffer PlayerSacrifice { get { return playerSacrifice; } }
+        public static VorbisWaveReader PlayerFire => new VorbisWaveReader(playerFire);
+        public static VorbisWaveReader PlayerDamaged => new VorbisWaveReader(playerDamaged);
+        public static VorbisWaveReader PlayerCrash => new VorbisWaveReader(playerCrash);
+        public static VorbisWaveReader PlayerExplosion => new VorbisWaveReader(playerExplosion);
+        public static VorbisWaveReader PlayerSacrifice => new VorbisWaveReader(playerSacrifice);
 
-        public static SoundBuffer Powerup { get { return powerup; } }
-        public static SoundBuffer ShieldProtect { get { return shieldProtect; } }
+        public static VorbisWaveReader Powerup => new VorbisWaveReader(powerup);
+        public static VorbisWaveReader ShieldProtect => new VorbisWaveReader(shieldProtect);
 
-        public static SoundBuffer EnemyFire { get { return enemyFire; } }
-        public static SoundBuffer EnemyMove { get {  return enemyMove; } }
-        public static SoundBuffer EnemyDamaged { get { return enemyDamaged; } }
-        public static SoundBuffer EnemyExplosion { get { return enemyExplosion; } }
+        public static VorbisWaveReader EnemyFire => new VorbisWaveReader(enemyFire);
+        public static VorbisWaveReader EnemyMove => new VorbisWaveReader(enemyMove);
+        public static VorbisWaveReader EnemyDamaged => new VorbisWaveReader(enemyDamaged);
+        public static VorbisWaveReader EnemyExplosion => new VorbisWaveReader(enemyExplosion);
 
-        public static SoundBuffer BossReinforcements => bossReinforcements;
-        public static SoundBuffer BossDeath => bossDeath;
-        public static SoundBuffer BossShieldBroken => bossShieldBroken;
+        public static VorbisWaveReader BossReinforcements => new VorbisWaveReader(bossReinforcements);
+        public static VorbisWaveReader BossDeath => new VorbisWaveReader(bossDeath);
+        public static VorbisWaveReader BossShieldBroken => new VorbisWaveReader(bossShieldBroken);
 
         // Intros
-        public static SoundBuffer WaveEntrance => waveEntrance;
-        public static SoundBuffer RainfallEntrance => rainfallEntrance;
-        public static SoundBuffer MeteorEntrance => meteorEntrance;
-        public static SoundBuffer BossEntrance => bossEntrance;
+        public static VorbisWaveReader WaveEntrance => new VorbisWaveReader(waveEntrance);
+        public static VorbisWaveReader RainfallEntrance => new VorbisWaveReader(rainfallEntrance);
+        public static VorbisWaveReader MeteorEntrance => new VorbisWaveReader(meteorEntrance);
+        public static VorbisWaveReader BossEntrance => new VorbisWaveReader(bossEntrance);
     }
 }
