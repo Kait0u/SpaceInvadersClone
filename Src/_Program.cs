@@ -1,7 +1,7 @@
-﻿
-using SFML.Graphics;
+﻿using SFML.Graphics;
+using SFML.System;
 using SFML.Window;
-using System.Data;
+using System.Text.Json;
 
 namespace SpaceInvadersClone
 {
@@ -9,13 +9,39 @@ namespace SpaceInvadersClone
     {
         public Application()
         {
+            InitializeFromJSON();
+            Console.WriteLine(windowed);
+
+            Styles style;
+            if (windowed)
+            {
+                videoMode = new VideoMode(defaultSize.X, defaultSize.Y);
+                style = Styles.Default;
+            }
+            else
+            {
+                uint w = VideoMode.DesktopMode.Width;
+                uint h = VideoMode.DesktopMode.Height;
+
+                videoMode = new VideoMode(w, h);
+                style = Styles.Fullscreen;
+            }
+            gameWindowInstance = new RenderWindow(videoMode, title, style);
+
             gameWindowInstance.Closed += (sender, args) => gameWindowInstance.Close();
             gameWindowInstance.SetVerticalSyncEnabled(true);
             soundController = new SoundController();
             soundControllerThread = new Thread(() => { while (gameWindowInstance.IsOpen) soundController.Update(); });
 
-            View view = gameWindowInstance.DefaultView;
+            View view = Utilities.Utilities.CalcView(gameWindowInstance.Size, defaultSize);
             gameWindowInstance.SetView(view);
+
+            gameWindowInstance.Resized += (sender, e) =>
+            {
+                View view = Utilities.Utilities.CalcView(new Vector2u(e.Width, e.Height), defaultSize);
+                gameWindowInstance.SetView(view);
+
+            };
         }
 
         public void Run()
@@ -46,8 +72,27 @@ namespace SpaceInvadersClone
             gameWindowInstance.Close();
         }
 
-        static VideoMode videoMode = new VideoMode(width, height);
-        static RenderWindow gameWindowInstance = new RenderWindow(videoMode, title, Styles.Titlebar);
+        void InitializeFromJSON()
+        {
+            try
+            { 
+                string jsonText = File.ReadAllText(configFilePath);
+                JsonDocument json = JsonDocument.Parse(jsonText);
+                JsonElement root = json.RootElement;
+                windowed = !root.GetProperty("FullScreen").GetBoolean();
+            }
+            catch (Exception e) when (e is FileNotFoundException)
+            {
+                File.CreateText(configFilePath);
+                File.WriteAllText(configFilePath, defaultConfigContent);
+            }
+        }
+
+        const uint defaultWidth = 1024, defaultHeight = 768;
+        readonly Vector2u defaultSize = new Vector2u(defaultWidth, defaultHeight);
+        static uint width = defaultWidth, height = defaultHeight;
+        static VideoMode videoMode;
+        static RenderWindow gameWindowInstance;
         
         public static RenderWindow GameWindowInstance { get { return gameWindowInstance; } }
 
@@ -62,12 +107,18 @@ namespace SpaceInvadersClone
         static ApplicationStates state = ApplicationStates.MainMenu;
         public static ApplicationStates State { get { return state; } set { state = value; } }
 
+        bool windowed = true;
+
         static SoundController soundController = new SoundController();
-        Thread soundControllerThread, newSoundControllerThread;
+        Thread soundControllerThread;
         public static SoundController SoundController { get {  return soundController; } }
 
-        const int width = 1024, height = 768;
         const string title = "Space Invaders";
+        const string configFilePath = "./config.json";
+        const string defaultConfigContent = @"
+{
+  ""FullScreen"": false
+}";
     }
 
 

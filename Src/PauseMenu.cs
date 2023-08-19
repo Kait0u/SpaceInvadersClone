@@ -16,11 +16,12 @@ namespace SpaceInvadersClone
             drawables = new List<Drawable>();
 
             Vector2u windowSize = window.Size;
-            Texture backgroundTexture = new Texture(windowSize.X, windowSize.Y);
-            backgroundTexture.Update(window);
-            background = new Sprite(backgroundTexture) { Position = new Vector2f(0, 0) };
-            background.Color = new Color(128, 128, 128);
-            drawables.Add(background);
+            //Texture backgroundTexture = new Texture(windowSize.X, windowSize.Y);
+            //backgroundTexture.Update(window);
+            //background = new Sprite(backgroundTexture);
+            //background.Color = new Color(128, 128, 128);
+            //background.Position = new Vector2f(((Vector2f)window.Size - window.GetView().Size) / 2f, 0);
+            //drawables.Add(background);
 
             options = new Dictionary<Options, Drawable>();
 
@@ -52,9 +53,9 @@ namespace SpaceInvadersClone
             float minBoxHeight = continueOption.GetGlobalBounds().Height + sacrificeOption.GetGlobalBounds().Height + quitOption.GetGlobalBounds().Height + 2 * interoptionPadding;
             float minBoxWidth = Math.Max(continueOption.GetGlobalBounds().Width, Math.Max(sacrificeOption.GetGlobalBounds().Width, quitOption.GetGlobalBounds().Width));
 
-            float x = (window.Size.X - minBoxWidth) / 2f;
+            float x = (window.GetView().Size.X - minBoxWidth) / 2f;
             float minX = x;
-            float y = (window.Size.Y - minBoxHeight) / 2f;
+            float y = (window.GetView().Size.Y - minBoxHeight) / 2f;
             
             Vector2f tlCorner = new Vector2f(x, y);
             Vector2f brCorner;
@@ -63,7 +64,7 @@ namespace SpaceInvadersClone
             {
                 Text t = (Text)textList[i];
                 
-                x = (window.Size.X - t.GetGlobalBounds().Width) / 2f;
+                x = (window.GetView().Size.X - t.GetGlobalBounds().Width) / 2f;
                 y += (i == 0 ? 0 : 1) * interoptionPadding;
                 
                 t.Position = new Vector2f(x, y);

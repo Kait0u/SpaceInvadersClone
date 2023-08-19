@@ -82,9 +82,9 @@ namespace SpaceInvadersClone
             }
 
             position.X = Math.Max(0, position.X);
-            position.X = Math.Min(renderWindow.Size.X - sprite.GetGlobalBounds().Width, position.X);
+            position.X = Math.Min(renderWindow.GetView().Size.X - sprite.GetGlobalBounds().Width, position.X);
             position.Y = Math.Max(0, position.Y);
-            position.Y = Math.Min(renderWindow.Size.Y - sprite.GetGlobalBounds().Height, position.Y);
+            position.Y = Math.Min(renderWindow.GetView().Size.Y - sprite.GetGlobalBounds().Height, position.Y);
 
 
             sprite.Position = position;
@@ -133,12 +133,12 @@ namespace SpaceInvadersClone
             delta *= boost ? boostMultiplier : 1;
             position += delta;
 
-            if (position.X < 0 || position.X >= renderWindow.Size.X - XSize)
+            if (position.X < 0 || position.X >= renderWindow.GetView().Size.X - XSize)
             {
                 position.X = temp.X;
             }
 
-            if (position.Y < 0 || position.Y >= renderWindow.Size.Y - YSize)
+            if (position.Y < 0 || position.Y >= renderWindow.GetView().Size.Y - YSize)
             {
                 position.Y = temp.Y;
             }
@@ -152,10 +152,10 @@ namespace SpaceInvadersClone
                 this.forcedPosition = forcedPosition;
 
                 if (this.forcedPosition.X < 0) this.forcedPosition.X = 0;
-                else if (this.forcedPosition.X >= renderWindow.Size.X - XSize) this.forcedPosition.X = renderWindow.Size.X - XSize;
+                else if (this.forcedPosition.X >= renderWindow.GetView().Size.X - XSize) this.forcedPosition.X = renderWindow.GetView().Size.X - XSize;
 
                 if (this.forcedPosition.Y < 0) this.forcedPosition.Y = 0;
-                else if (this.forcedPosition.Y >= renderWindow.Size.Y - YSize) this.forcedPosition.Y = renderWindow.Size.Y - YSize;
+                else if (this.forcedPosition.Y >= renderWindow.GetView().Size.Y - YSize) this.forcedPosition.Y = renderWindow.GetView().Size.Y - YSize;
                 this.fullForcedDirection = this.forcedPosition - this.position;
                 this.forcedDirection = this.fullForcedDirection / (float)Utilities.Utilities.Magnitude(fullForcedDirection);
             }

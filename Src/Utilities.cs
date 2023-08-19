@@ -1,4 +1,5 @@
-﻿using SFML.System;
+﻿using SFML.Graphics;
+using SFML.System;
 using SpaceInvadersClone;
 
 namespace Utilities
@@ -20,6 +21,30 @@ namespace Utilities
         public static double Magnitude(Vector2f v)
         { 
             return Math.Sqrt(v.X * v.X + v.Y * v.Y);
+        }
+
+        public static View CalcView(Vector2u windowCurrSize, Vector2u baseSize)
+        {
+            FloatRect viewport = new FloatRect(0f, 0f, 1f, 1f);
+
+            float sw = windowCurrSize.X / (float)baseSize.X;
+            float sh = windowCurrSize.Y / (float)baseSize.Y;
+
+            if (sw > sh) 
+            { 
+                viewport.Width = sh / sw;
+                viewport.Left = (1f - viewport.Width) / 2f;
+            }
+
+            else if (sw < sh)
+            {
+                viewport.Height = sw / sh;
+                viewport.Top = (1f - viewport.Height) / 2f;
+            }
+
+            View view = new View(new FloatRect(0f, 0f, baseSize.X, baseSize.Y));
+            view.Viewport = viewport;
+            return view;
         }
 
         public static float DegRadConversionConstant => degRadConversionCostant;

@@ -55,7 +55,7 @@ namespace SpaceInvadersClone
             foreach (Bonus bonus in bonusList)
             {
                 bool touchesPlayer = bonus.BonusSprite.GetGlobalBounds().Intersects(player.PlayerSprite.GetGlobalBounds());
-                bool isOffScreen = bonus.BonusSprite.Position.Y > renderWindow.Size.Y + bonus.YSize + 10;
+                bool isOffScreen = bonus.BonusSprite.Position.Y > renderWindow.GetView().Size.Y + bonus.YSize + 10;
                 
                 if (touchesPlayer)
                 {

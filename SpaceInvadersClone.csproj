@@ -48,6 +48,7 @@
     <None Remove="Assets\Sprites\powerup.png" />
     <None Remove="Assets\Sprites\space.png" />
     <None Remove="Assets\Sprites\spaceship.png" />
+    <None Remove="config.json" />
   </ItemGroup>
 
   <!--<ItemGroup>
@@ -165,6 +166,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Sprites\spaceship.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

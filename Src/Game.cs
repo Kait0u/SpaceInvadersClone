@@ -17,7 +17,7 @@ namespace SpaceInvadersClone
             bgSprite = new Sprite(TextureBank.BackgroundTexture);
 
             player.Reset();
-            playerSpawnPoint = new Vector2f(window.Size.X / 2f - player.XSize / 2f, window.Size.Y - player.YSize - 10);
+            playerSpawnPoint = new Vector2f(window.GetView().Size.X / 2f - player.XSize / 2f, window.GetView().Size.Y - player.YSize - 10);
             player.X = playerSpawnPoint.X;
             player.Y = playerSpawnPoint.Y;
 

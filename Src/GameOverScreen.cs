@@ -25,8 +25,8 @@ namespace SpaceInvadersClone
                 DisplayedString = "Game Over"
             };
             
-            Vector2f pos = new Vector2f((window.Size.X - gameOverText.GetLocalBounds().Width) / 2f, 
-                                        window.Size.Y / 2f - gameOverText.GetLocalBounds().Height * 1.5f);
+            Vector2f pos = new Vector2f((window.GetView().Size.X - gameOverText.GetLocalBounds().Width) / 2f, 
+                                        window.GetView().Size.Y / 2f - gameOverText.GetLocalBounds().Height * 1.5f);
             gameOverText.Position = new Vector2f(pos.X, pos.Y);
 
             gameOverInstruction = new Text() {
@@ -36,8 +36,8 @@ namespace SpaceInvadersClone
                 DisplayedString = "Press ENTER to continue"
             };
 
-            pos = new Vector2f((window.Size.X - gameOverInstruction.GetLocalBounds().Width) / 2f,
-                               window.Size.Y / 2f + 5);
+            pos = new Vector2f((window.GetView().Size.X - gameOverInstruction.GetLocalBounds().Width) / 2f,
+                               window.GetView().Size.Y / 2f + 5);
 
             gameOverInstruction.Position = new Vector2f(pos.X, pos.Y);
 

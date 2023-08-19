@@ -55,7 +55,7 @@ namespace SpaceInvadersClone
                 CharacterSize = 100,
                 DisplayedString = "Space Invaders"
             };
-            Vector2f pos = new Vector2f((window.Size.X - logo.GetLocalBounds().Width) / 2f, 0);
+            Vector2f pos = new Vector2f((window.GetView().Size.X - logo.GetLocalBounds().Width) / 2f, 0);
             logo.Position = new Vector2f(pos.X, pos.Y);
             drawables.Add(logo);
 
@@ -76,20 +76,20 @@ namespace SpaceInvadersClone
             };
 
             float interoptionPadding = 20;
-            float y = window.Size.Y - playOption.GetLocalBounds().Height - creditsOption.GetLocalBounds().Height - exitOption.GetLocalBounds().Height - 4 * interoptionPadding;
-            pos = new Vector2f((window.Size.X - playOption.GetLocalBounds().Width) / 2f, y);
+            float y = window.GetView().Size.Y - playOption.GetLocalBounds().Height - creditsOption.GetLocalBounds().Height - exitOption.GetLocalBounds().Height - 4 * interoptionPadding;
+            pos = new Vector2f((window.GetView().Size.X - playOption.GetLocalBounds().Width) / 2f, y);
             playOption.Position = new Vector2f(pos.X, pos.Y);
             y += playOption.GetLocalBounds().Height + interoptionPadding;
             options.Add(Options.Play, playOption);
             drawables.Add(playOption);
 
-            pos = new Vector2f((window.Size.X - creditsOption.GetLocalBounds().Width) / 2f, y);
+            pos = new Vector2f((window.GetView().Size.X - creditsOption.GetLocalBounds().Width) / 2f, y);
             creditsOption.Position = new Vector2f(pos.X, pos.Y);
             y += creditsOption.GetLocalBounds().Height + interoptionPadding;
             options.Add(Options.Credits, creditsOption);
             drawables.Add(creditsOption);
 
-            pos = new Vector2f((window.Size.X - exitOption.GetLocalBounds().Width) / 2f, y);
+            pos = new Vector2f((window.GetView().Size.X - exitOption.GetLocalBounds().Width) / 2f, y);
             exitOption.Position = new Vector2f(pos.X, pos.Y);
             options.Add(Options.Exit, exitOption);
             drawables.Add(exitOption);

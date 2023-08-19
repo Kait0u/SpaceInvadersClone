@@ -11,7 +11,7 @@ namespace SpaceInvadersClone
         {
             renderWindow = Game.GameWindowInstance;
             player = Game.PlayerInstance;
-            width = (int)renderWindow.Size.X;
+            width = (int)renderWindow.GetView().Size.X;
             height = 30; // Due to wave layout and other cases
             font = FontBank.PixelColeco;
 
@@ -55,7 +55,7 @@ namespace SpaceInvadersClone
                 filling = new string(' ', spaces);
                 scoreInfo.DisplayedString = $"Score: {filling}{text}";
             }
-            scoreInfo.Position = new Vector2f(renderWindow.Size.X - scoreInfo.GetLocalBounds().Width - scoreInfo.CharacterSize / 2,
+            scoreInfo.Position = new Vector2f(renderWindow.GetView().Size.X - scoreInfo.GetLocalBounds().Width - scoreInfo.CharacterSize / 2,
                                               top);
 
             // Wave Number Info
