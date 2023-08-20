@@ -9,8 +9,7 @@ namespace SpaceInvadersClone
     {
         public Application()
         {
-            InitializeFromJSON();
-            Console.WriteLine(windowed);
+            InitializeFromJSON(); // Load settings from a JSON or create a new one if it's missing
 
             Styles style;
             if (windowed)
@@ -38,15 +37,14 @@ namespace SpaceInvadersClone
 
             gameWindowInstance.Resized += (sender, e) =>
             {
-                View view = Utilities.Utilities.CalcView(new Vector2u(e.Width, e.Height), defaultSize);
+                View view = Utilities.Utilities.CalcView(new Vector2u(e.Width, e.Height), defaultSize); // Recalculate the view and viewport
                 gameWindowInstance.SetView(view);
-
             };
         }
 
         public void Run()
         {
-            soundControllerThread.Start();
+            soundControllerThread.Start(); // Start an audio controller for audio handling in a separate thread
 
             while (gameWindowInstance.IsOpen)
             {
@@ -72,7 +70,7 @@ namespace SpaceInvadersClone
             gameWindowInstance.Close();
         }
 
-        void InitializeFromJSON()
+        void InitializeFromJSON() // Load settings
         {
             try
             { 
@@ -81,16 +79,15 @@ namespace SpaceInvadersClone
                 JsonElement root = json.RootElement;
                 windowed = !root.GetProperty("FullScreen").GetBoolean();
             }
-            catch (Exception e) when (e is FileNotFoundException)
+            catch (Exception e) // Something's wrong with the file?
             {
-                File.CreateText(configFilePath);
                 File.WriteAllText(configFilePath, defaultConfigContent);
+                InitializeFromJSON();
             }
         }
 
-        const uint defaultWidth = 1024, defaultHeight = 768;
+        const uint defaultWidth = 1024, defaultHeight = 768; // Default game dimensions - beyond that, everything will have to maintain the aspect ratio
         readonly Vector2u defaultSize = new Vector2u(defaultWidth, defaultHeight);
-        static uint width = defaultWidth, height = defaultHeight;
         static VideoMode videoMode;
         static RenderWindow gameWindowInstance;
         

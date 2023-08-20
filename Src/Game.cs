@@ -45,7 +45,7 @@ namespace SpaceInvadersClone
 
         public void Dispose()
         {
-            window.KeyPressed -= escPauseMenu;
+            window.KeyPressed -= escPauseMenu; // Drop the escape button functionality
         }
 
         public void Run()

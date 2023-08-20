@@ -21,10 +21,6 @@ namespace SpaceInvadersClone
 
         public abstract void Move();
 
-        //public virtual void ForceMove()
-        //{ 
-
-        //}
 
         public virtual void PlayIntro() { if (!intro) intro = true; }
         public abstract void Intro();
@@ -130,6 +126,7 @@ namespace SpaceInvadersClone
 
             }
 
+            // Recalculate the two defining corners to know where a wave ends and where it begins for movement control
             TopLeftCorner = new Vector2f(minX, minY);
             BottomRightCorner = new Vector2f(maxX, maxY);
         }
@@ -137,38 +134,33 @@ namespace SpaceInvadersClone
         public override void Move()
         {
             if (direction == null) return;
-            if (movementClock.ElapsedTime < movementBreak) return;
+            if (movementClock.ElapsedTime < movementBreak) return; // Only take action if the clock allows it
 
             Application.SoundController.Play(SoundBank.EnemyMove);
-
-            foreach (Enemy enemy in enemies)
-            {
-                enemy.X += movementSpeed * direction.X;
-            }
 
             if (descent)
             {
                 Lower();
-                return;
             }
 
             else if (topLeftCorner.X + movementSpeed * direction.X <= 0 || bottomRightCorner.X + movementSpeed * direction.X >= renderWindow.GetView().Size.X)
             {
                 descent = true;
                 Lower();
-                return;
             }
 
-            if (!descent)
+            foreach (Enemy enemy in enemies)
             {
-                topLeftCorner += movementSpeed * direction;
-                bottomRightCorner += movementSpeed * direction;
+                enemy.X += movementSpeed * direction.X;
             }
+
+            topLeftCorner += movementSpeed * direction;
+            bottomRightCorner += movementSpeed * direction;
 
             movementClock.Restart();
         }
 
-        void Lower()
+        void Lower() // Start going down instead of left/right
         {
             if (direction == null) return;
 
@@ -178,7 +170,7 @@ namespace SpaceInvadersClone
             if (descent)
             {
                 
-                if (descentBuffer > movementSpeed) 
+                if (descentBuffer > movementSpeed) // For as long as the enemies can, they will move down by their usual speed
                 {
                     foreach (Enemy enemy in enemies)
                     {
@@ -190,11 +182,11 @@ namespace SpaceInvadersClone
                     descentBuffer -= movementSpeed;
                 }
 
-                else
+                else // If they'd go too far by going with their usual speed
                 {
                     foreach (Enemy enemy in enemies)
                     {
-                        enemy.Y += descentBuffer;
+                        enemy.Y += descentBuffer; // Move down by what's left to move
 
                         // Kill those who are too far below the screen --> WaveController
                     }
@@ -286,7 +278,7 @@ namespace SpaceInvadersClone
 
     class Rain: EnemyGroup
     {
-        private class Droplet
+        private class Droplet // A droplet is a unit of enemies of width 1 and varying length, coming down
         {
             public Droplet(uint enemyCount, float speed, int health = 1)
             {
@@ -353,6 +345,7 @@ namespace SpaceInvadersClone
 
                 droplets.Add(droplet);
 
+                // Add some delay for individual droplets so that not all of them come down at once
                 dropletDelay.Add(droplet, Time.FromMilliseconds(dropletBreak.AsMilliseconds()));
 
                 int r = random.Next(50, 2000) * (i / 2 + 1);
@@ -454,9 +447,9 @@ namespace SpaceInvadersClone
 
     class MeteorShower : EnemyGroup
     {
-        class SpawnLine
+        private class SpawnLine // The line from which meteors will be spawned
         {
-            public SpawnLine(int alphaDeg, int r)
+            public SpawnLine(int alphaDeg, int r) 
             {
                 renderWindow = Application.GameWindowInstance;
 
@@ -464,13 +457,13 @@ namespace SpaceInvadersClone
                 this.alphaRad = DegToRad(alphaDeg);
                 this.r = r;
 
-                C = (Vector2f)renderWindow.Size / 2;
+                C = renderWindow.GetView().Size / 2; // The center of the window
+                // Two ends of the line
                 A = new Vector2f((float)(r * Math.Cos(alphaRad)), -(float)(r * Math.Sin(alphaRad))) + C;
                 B = new Vector2f((float)(r * Math.Cos(alphaRad + DegToRad(90))), -(float)(r * Math.Sin(alphaRad + DegToRad(90)))) + C;
 
                 m = (float)(A.Y - B.Y) / (A.X - B.X);
                 intercept = A.Y - A.X * m;
-                thetaRad = (float)Math.Atan(m);
 
                 f = (x) => m * x + intercept;
 
@@ -487,7 +480,7 @@ namespace SpaceInvadersClone
             RenderWindow renderWindow;
             Vector2f A, B, C;
             int alphaDeg, r;
-            float alphaRad, thetaRad;
+            float alphaRad;
 
             float m, intercept;
             Func<float, float> f;
@@ -605,7 +598,6 @@ namespace SpaceInvadersClone
 
         bool isAggressive = false;
         Random random;
-        RenderWindow renderWindow;
         SpawnLine spawnLine;
         List<Hostile> enemies;
         List<Meteor> movingMeteors;
@@ -623,7 +615,7 @@ namespace SpaceInvadersClone
 
     class BossFight : EnemyGroup
     {
-        class ProtectorRing
+        private class ProtectorRing
         {
             public ProtectorRing(BossEnemy bossEnemy, int enemyCount, int health)
             {
@@ -785,7 +777,7 @@ namespace SpaceInvadersClone
             protectorRingsLeft = Math.Min(1 + Game.BossesSlain * 2, 8);
             isAggressive = true;
 
-            Vector2f pos = ((Vector2f)renderWindow.GetView().Size - new Vector2f(bossSize, bossSize)) / 2f;
+            Vector2f pos = (renderWindow.GetView().Size - new Vector2f(bossSize, bossSize)) / 2f;
             boss = new BossEnemy(pos, healthUnits * 25, 3 + healthUnits);
             boss.Shield();
             enemies.Add(boss);
@@ -810,11 +802,16 @@ namespace SpaceInvadersClone
             {
                 Application.SoundController.Play(SoundBank.BossDeath);
                 ++Game.BossesSlain; 
-                for (int i = 0; i < 3; ++i) 
+                for (int i = 0; i < random.Next(2, 3); ++i) 
                     Game.BonusController.IssuePowerup(
                         new Vector2f(
                             boss.X + boss.XSize/2 - 8 + random.Next(-16, 17), 
-                            boss.Y + boss.YSize/2 - 8 + random.Next(-16, 17))); 
+                            boss.Y + boss.YSize/2 - 8 + random.Next(-16, 17)));
+                for (int i = 0; i < random.Next(1, 3); ++i)
+                    Game.BonusController.IssueMedkit(
+                        new Vector2f(
+                            boss.X + boss.XSize / 2 - 8 + random.Next(-16, 17),
+                            boss.Y + boss.YSize / 2 - 8 + random.Next(-16, 17)));
                 return; 
             }
 
@@ -863,12 +860,12 @@ namespace SpaceInvadersClone
             float displacementY = renderWindow.GetView().Size.Y / 2f + bossSize;
             activeRing.RingCenter -= new Vector2f(0, displacementY);
             activeRing.EnemyList.ForEach(enemy => { enemy.Y -= displacementY; });
-            activeRing.EnRoute = true;
             activeRing.EnRouteClock = new Clock();
             activeRing.EnRouteDeltaTime = movementBreak / 4f;
             activeRing.EnRouteCountdown = 20;
             activeRing.EnRouteDeltaY = displacementY / activeRing.EnRouteCountdown;
-            
+            activeRing.EnRoute = true;
+
             Arm();
             activeRing.ReinforcementsSound = Application.SoundController.Play(new LoopStream(SoundBank.BossReinforcements));
             AlterSpeed();
@@ -896,7 +893,6 @@ namespace SpaceInvadersClone
 
                 --introCountdown;
                 introClock.Restart();
-
             }
         }
 
@@ -1017,7 +1013,10 @@ namespace SpaceInvadersClone
             int choice = random.Next(models.Count);
             models[choice]();
 
-            // enemyGroup?.PlayIntro();
+            isWave = true;
+            isBreak = false;
+            clock = new Clock();
+
             // PlayIntro moved to individual constructors
         }
 
@@ -1050,10 +1049,6 @@ namespace SpaceInvadersClone
                 ++waveNumber;
                 waveInitialSize = enemyGroup.EnemyList.Count;
                 ArmEnemies();
-                isWave = true;
-                isBreak = false;
-                clock = new Clock();
-                // waveClock = clock; // ???
                 CalculateTimeBoundaries();
                 attackBreak = Time.FromMilliseconds(random.Next(800, 4500 / 2));
                 enemyGroup.MovementCooldown = Time.FromMilliseconds(300);
@@ -1073,7 +1068,6 @@ namespace SpaceInvadersClone
                 isWave = true;
                 isBreak = false;
                 clock = new Clock();
-                // waveClock = clock; // ???
                 CalculateTimeBoundaries();
                 enemyGroup.MovementCooldown = Time.FromMilliseconds(150);
                 initialMovementCooldown = enemyGroup.MovementCooldown;
@@ -1089,11 +1083,6 @@ namespace SpaceInvadersClone
                 ((BossFight)enemyGroup).Arm();
                 ++waveNumber;
                 waveInitialSize = enemyGroup.EnemyList.Count;
-
-                isWave = true;
-                isBreak = false;
-                clock = new Clock();
-                // waveClock = clock; // ???
                 CalculateTimeBoundaries();
                 enemyGroup.MovementCooldown = Time.FromMilliseconds(150);
                 initialMovementCooldown = enemyGroup.MovementCooldown;

@@ -3,7 +3,7 @@ using SFML.System;
 
 namespace SpaceInvadersClone
 {
-    class Bonus
+    abstract class Bonus
     {
         public Bonus(Vector2f initialPosition, float velocity)
         {
@@ -12,9 +12,9 @@ namespace SpaceInvadersClone
             direction = new Vector2f(0, 1);
         }
 
-        public virtual void Update() { }
+        public abstract void Update();
 
-        public virtual void Action(Player player) { }
+        public abstract void Action(Player player);
 
         public float X { get { return position.X; } set { position.X = value; } }
         public float Y { get { return position.Y; } set { position.Y = value; } }
@@ -27,8 +27,6 @@ namespace SpaceInvadersClone
         protected Vector2f Position { get { return position; } set { position = value; } }
         protected Vector2f Direction { get { return direction; } }
         protected float Velocity { get { return velocity; } set { velocity = value; } }
-
-        
 
         float velocity;
         Vector2f position, direction;

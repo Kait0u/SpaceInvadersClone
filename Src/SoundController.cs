@@ -68,8 +68,7 @@ namespace SpaceInvadersClone
 
         public void Update()
         {
-            if (soundList.Count <= 0 && soundQueue.Count <= 0) return;
-
+            // Remove items marked for removal
             foreach (DirectSoundOut waveOut in garbageList)
             {
                 waveOut.Stop();
@@ -77,9 +76,13 @@ namespace SpaceInvadersClone
                 soundList.Remove(waveOut);
             }
 
+            // Clear the list of items marked for removal
             garbageList.Clear();
 
-            lock (soundQueue)
+            if (soundList.Count <= 0 && soundQueue.Count <= 0) return;
+            // Stop if there's nothing to do
+
+            lock (soundQueue) // Prevent others from accessing the queue
             {
                 while (soundQueue.Count > 0)
                 {
@@ -92,9 +95,8 @@ namespace SpaceInvadersClone
             foreach (DirectSoundOut waveOut in soundList)
             {
                 if (waveOut != null && waveOut.PlaybackState == PlaybackState.Stopped) garbageList.Add(waveOut);
+                // Mark the DirectSoundOut object for removal if it's done playing
             }
-
-            //Console.WriteLine();
         }
 
         public DirectSoundOut Play(WaveStream stream)

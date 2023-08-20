@@ -1,9 +1,5 @@
-﻿
-using SFML.Graphics;
+﻿using SFML.Graphics;
 using SFML.System;
-using System.Diagnostics.Metrics;
-using System.Net;
-using static SpaceInvadersClone.Enemy;
 
 namespace SpaceInvadersClone
 {
