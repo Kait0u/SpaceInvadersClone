@@ -1156,8 +1156,6 @@ namespace SpaceInvadersClone
 
                         enemyGroup.EnemyList[attackerIndex].Fire();
 
-                        Application.SoundController.Play(SoundBank.EnemyFire);
-
                         CalculateTimeBoundaries();
                         attackBreak = Time.FromMilliseconds(random.Next(timeBoundaryLeft, timeBoundaryRight + 1));
                         clock.Restart();

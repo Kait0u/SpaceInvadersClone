@@ -177,6 +177,7 @@ namespace SpaceInvadersClone
         {
             EnemyBullet bullet = bulletBP.Copy();
             Game.EnemyBulletController.RegisterBullet(bullet);
+            Application.SoundController.Play(SoundBank.EnemyFire);
         }
 
         public override int PointValue { get { return pointValue * bulletBP.BulletModePoints; } }
@@ -337,6 +338,8 @@ namespace SpaceInvadersClone
                 if (x == 0) FireDirected();
                 else if (x == 1) FireStraight();
                 else if (x == 2) FireTargetted();
+
+                Application.SoundController.Play(SoundBank.EnemyFire);
             }
         }
 
