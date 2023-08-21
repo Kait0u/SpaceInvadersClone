@@ -3,6 +3,7 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 
 namespace SpaceInvadersClone
 {
@@ -15,13 +16,12 @@ namespace SpaceInvadersClone
 
             drawables = new List<Drawable>();
 
-            Vector2u windowSize = window.Size;
-            //Texture backgroundTexture = new Texture(windowSize.X, windowSize.Y);
-            //backgroundTexture.Update(window);
-            //background = new Sprite(backgroundTexture);
-            //background.Color = new Color(128, 128, 128);
-            //background.Position = new Vector2f(((Vector2f)window.Size - window.GetView().Size) / 2f, 0);
-            //drawables.Add(background);
+            Vector2f viewSize = window.GetView().Size;
+            background = new RectangleShape();
+            background.Size = viewSize;
+            background.FillColor = new Color(0, 0, 0, 128);
+
+            drawables.Add(background);
 
             options = new Dictionary<Options, Drawable>();
 
@@ -164,11 +164,20 @@ namespace SpaceInvadersClone
 
         void Draw() 
         {
+            window.Draw(game.Background);
+            Game.PlayerInstance.Draw();
+            Game.BonusController.Draw();
+            Game.EnemyBulletController.DrawBullets();
+            Game.PlayerBulletController.DrawBullets();
+            Game.WaveController.Draw();
+
+
             foreach (Drawable drawable in drawables)
             {
                 window.Draw(drawable);
             }
 
+            game.InfoBar.Draw();
             // Add above this line
             window.Display();
         }
@@ -199,7 +208,7 @@ namespace SpaceInvadersClone
 
         RenderWindow window;
         Game game;
-        Sprite background;
+        RectangleShape background;
 
         bool selectionExecuted;
 

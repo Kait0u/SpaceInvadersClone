@@ -1,10 +1,7 @@
 ﻿using NAudio.Vorbis;
 using NAudio.Wave;
-
 using SFML.Graphics;
 using SFML.System;
-using System;
-using System.Diagnostics.Metrics;
 using Utilities;
 
 namespace SpaceInvadersClone

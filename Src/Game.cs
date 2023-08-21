@@ -124,6 +124,8 @@ namespace SpaceInvadersClone
         bool gameOver, pause;
         EventHandler<KeyEventArgs> escPauseMenu;
 
+        public Sprite Background => bgSprite;
+        public InfoBar InfoBar => infoBar;
 
         static RenderWindow gameWindowInstance;
         static Player player = new Player();
@@ -137,10 +139,12 @@ namespace SpaceInvadersClone
         public static RenderWindow GameWindowInstance { get { return gameWindowInstance; } }
         public static Player PlayerInstance { get { return player; } }
         public static Vector2f PlayerSpawnPoint { get { return playerSpawnPoint; } }
+
         public static BulletController<PlayerBullet> PlayerBulletController { get { return playerBulletController; } }
         public static BulletController<EnemyBullet> EnemyBulletController { get { return enemyBulletController; } }
         public static WaveController WaveController { get { return waveController; } }
         public static BonusController BonusController { get { return bonusController; } }
+        
 
         public static int BossesSlain { get {  return bossesSlain; } set { bossesSlain = value; } }
 

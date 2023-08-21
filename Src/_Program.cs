@@ -87,7 +87,9 @@ namespace SpaceInvadersClone
         }
 
         const uint defaultWidth = 1024, defaultHeight = 768; // Default game dimensions - beyond that, everything will have to maintain the aspect ratio
-        readonly Vector2u defaultSize = new Vector2u(defaultWidth, defaultHeight);
+        static readonly Vector2u defaultSize = new Vector2u(defaultWidth, defaultHeight);
+        public static Vector2u DefaultSize => defaultSize;
+
         static VideoMode videoMode;
         static RenderWindow gameWindowInstance;
         
