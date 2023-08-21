@@ -58,7 +58,6 @@ namespace SpaceInvadersClone
         public Wave(int health = 1) 
         {
             random = new Random();
-            renderWindow = Game.GameWindowInstance;
             movementClock = new Clock();
             movementBreak = Time.FromMilliseconds(500);
             enemies = base.EnemyList;
@@ -254,7 +253,6 @@ namespace SpaceInvadersClone
 
         bool isAggressive = true;
         Random random;
-        RenderWindow renderWindow;
         List<Hostile> enemies;
 
         const int enemySize = 32;
@@ -422,7 +420,6 @@ namespace SpaceInvadersClone
 
         bool isAggressive = true;
         Random random;
-        RenderWindow renderWindow;
 
         int dropletCount;
         List<Droplet> droplets, movingDroplets, garbageList;
@@ -825,7 +822,7 @@ namespace SpaceInvadersClone
                 return; 
             }
 
-            if (intro) { Intro(); activeRing.Update(); return; }
+            if (intro) { Intro(); activeRing?.Update(); return; }
 
             if (activeRing != null && activeRing.EnemyList.Count == 0 && protectorRingsLeft == 0) { activeRing = null; Application.SoundController.Play(SoundBank.BossShieldBroken); }
             else if (activeRing != null && activeRing.EnemyList.Count == 0 && protectorRingsLeft > 0) CallProtectors();
@@ -957,7 +954,6 @@ namespace SpaceInvadersClone
         }
 
         Random random;
-        RenderWindow renderWindow;
         List<Hostile> enemies;
         int healthUnits;
 

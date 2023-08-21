@@ -54,6 +54,7 @@ namespace SpaceInvadersClone
                     mainMenu.Run();
                     mainMenu.Dispose();
                 }
+
                 else if (state == ApplicationStates.Game)
                 {
                     Game game = new Game(gameWindowInstance);
@@ -61,6 +62,13 @@ namespace SpaceInvadersClone
                     game.Dispose();
                 }
                 else if (state == ApplicationStates.GameOver) { new GameOverScreen(gameWindowInstance).Run(); }
+
+                else if (state == ApplicationStates.Credits)
+                {
+                    CreditsScreen credits = new CreditsScreen();
+                    credits.Run();
+                }
+
                 else if (state == ApplicationStates.Terminated) { Close(); }
             }
         }
@@ -100,6 +108,7 @@ namespace SpaceInvadersClone
             MainMenu,
             Game,
             GameOver,
+            Credits,
             Terminated
         }
 

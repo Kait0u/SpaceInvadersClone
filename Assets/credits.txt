@@ -1,11 +1,11 @@
-SPACE INVADERS CLONE
-by Kait0u
+[Code]
+Kait0u
 
 [Sounds]
 jsfxr 
 
 [Graphics]
-opengameart.org: StumpyStrust, RedShrike
-Some images by Kait0u
+opengameart.org*: StumpyStrust, RedShrike
+Some sprites by Kait0u
 
-
+*: details in art_details.txt

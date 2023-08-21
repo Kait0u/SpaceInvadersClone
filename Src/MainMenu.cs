@@ -142,23 +142,16 @@ namespace SpaceInvadersClone
 
         void MoveUp()
         {
-
             --selected;
             selected = (Options)Utilities.Utilities.Modulus((int)selected, options.Count());
 
-            //sound.Play();
-            //Application.SoundController.RegisterSound(sound);
             Application.SoundController.Play(SoundBank.MoveSelection);
         }
 
         void MoveDown() 
         {
-
             ++selected;
             selected = (Options)Utilities.Utilities.Modulus((int)selected, options.Count());
-
-            //sound.Play();
-            //Application.SoundController.RegisterSound(sound);
             Application.SoundController.Play(SoundBank.MoveSelection);
         }
 
@@ -170,7 +163,11 @@ namespace SpaceInvadersClone
                 selectionExecuted = true;
             }
             
-            else if (selected == Options.Credits) { }
+            else if (selected == Options.Credits) 
+            {
+                Application.State = Application.ApplicationStates.Credits;
+                selectionExecuted = true;
+            }
             
             else if (selected == Options.Exit) 
             {

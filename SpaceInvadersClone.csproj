@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\credits.txt" />
     <None Remove="Assets\Fonts\PixelColeco.ttf" />
     <None Remove="Assets\Sounds\boss_death.ogg" />
     <None Remove="Assets\Sounds\boss_entrance.ogg" />
@@ -49,6 +50,7 @@
     <None Remove="Assets\Sprites\space.png" />
     <None Remove="Assets\Sprites\spaceship.png" />
     <None Remove="config.json" />
+    <None Remove="Info\art_details.txt" />
   </ItemGroup>
 
   <!--<ItemGroup>
@@ -57,6 +59,9 @@
   </ItemGroup>-->
 
   <ItemGroup>
+    <Content Include="Assets\credits.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Fonts\PixelColeco.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -169,6 +174,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Info\art_details.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
