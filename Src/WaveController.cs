@@ -474,6 +474,7 @@ namespace SpaceInvadersClone
             }
 
             public float Evaluate(float xValue) => f(xValue);
+            public float FindX(float yValue) => (yValue - intercept) / m;
 
             float DegToRad(float d) => d * Utilities.Utilities.DegRadConversionConstant;
 
@@ -508,7 +509,7 @@ namespace SpaceInvadersClone
             enemies = new List<Hostile>();
             movingMeteors = new List<Meteor>();
             meteorDelay = new Dictionary<Meteor, Time>();
-            enemyCount = Math.Min(2000, 15 * random.Next(4, 5 + (int)(Math.Exp(health) / 2)));
+            enemyCount = Math.Min(1200, 20 * random.Next(4, 5 + health));
 
             int alphaDeg = random.Next(15, 75 + 1);
             int r = (int)Utilities.Utilities.Magnitude(new Vector2f(renderWindow.GetView().Size.X/2 + maxEnemySize, renderWindow.GetView().Size.Y/2 + maxEnemySize)) + 1;
@@ -529,6 +530,18 @@ namespace SpaceInvadersClone
                 Vector2f pos = new Vector2f(x, y);
 
                 float speed = random.Next(35, 165 + 1) / 10f;
+
+                // Check if it'll ever appear on the screen:
+                bool shouldAdd = false;
+                for (float t = 0f; !shouldAdd && t * spawnLine.OrthogonalVector.Y <= renderWindow.GetView().Size.Y; t += speed)
+                {
+                    Vector2f p = t * spawnLine.OrthogonalVector;
+                    Vector2f lims = renderWindow.GetView().Size;
+                    shouldAdd = (0 <= p.X && p.X <= lims.X
+                              && 0 <= p.Y && p.Y <= lims.Y);
+                }
+
+                if (!shouldAdd) continue;
 
                 int randInd = random.Next(meteorTextures.Count);
 
