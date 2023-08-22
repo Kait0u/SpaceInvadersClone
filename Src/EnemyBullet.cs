@@ -154,8 +154,8 @@ namespace SpaceInvadersClone
             verticalCosine = true;
         }
 
-        public int XSize { get { return (int)sprite.Texture.Size.X; } }
-        public int YSize { get { return (int)sprite.Texture.Size.Y; } }
+        public int XSize => (int)sprite.GetGlobalBounds().Width;
+        public int YSize => (int)sprite.GetGlobalBounds().Height;
 
         public float X { get { return position.X; } set { position.X = value; } }
         public float Y { get { return position.Y; } set { position.Y = value; } }

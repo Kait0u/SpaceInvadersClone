@@ -14,13 +14,13 @@ namespace SpaceInvadersClone
 
         public abstract void Update();
 
-        public abstract void Action(Player player);
+        public abstract void Action(Player player); // What happens when picked up
 
         public float X { get { return position.X; } set { position.X = value; } }
         public float Y { get { return position.Y; } set { position.Y = value; } }
 
-        public virtual int XSize { get { return (int)sprite.Texture.Size.X; } }
-        public virtual int YSize { get { return (int)sprite.Texture.Size.Y; } }
+        public virtual int XSize => (int)sprite.GetGlobalBounds().Width;
+        public virtual int YSize => (int)sprite.GetGlobalBounds().Height;
 
         public Sprite BonusSprite { get { return sprite; } set { sprite = value; } }
 
@@ -52,8 +52,8 @@ namespace SpaceInvadersClone
             ++player.WeaponLevel;
         }
 
-        public override int XSize { get { return (int)BonusSprite.Texture.Size.X; } }
-        public override int YSize { get { return (int)BonusSprite.Texture.Size.Y; } }
+        public override int XSize => (int)BonusSprite.GetGlobalBounds().Width;
+        public override int YSize => (int)BonusSprite.GetGlobalBounds().Height;
     }
 
     class Medkit: Bonus
@@ -74,8 +74,8 @@ namespace SpaceInvadersClone
             player.Heal(healValue);
         }
 
-        public override int XSize { get { return (int)BonusSprite.Texture.Size.X; } }
-        public override int YSize { get { return (int)BonusSprite.Texture.Size.Y; } }
+        public override int XSize => (int)BonusSprite.GetGlobalBounds().Width;
+        public override int YSize => (int)BonusSprite.GetGlobalBounds().Height;
 
         const int healValue = 10;
     }
