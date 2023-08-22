@@ -97,6 +97,8 @@ namespace SpaceInvadersClone
 
         private void Draw()
         {
+            window.Clear();
+
             window.Draw(bgSprite);
             player.Draw();
             playerBulletController.DrawBullets();

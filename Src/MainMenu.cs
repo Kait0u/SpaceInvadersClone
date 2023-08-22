@@ -133,7 +133,9 @@ namespace SpaceInvadersClone
         }
 
         void Draw() 
-        { 
+        {
+            window.Clear();
+
             foreach (Drawable drawable in drawables)
             {
                 window.Draw(drawable);

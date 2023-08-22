@@ -164,6 +164,8 @@ namespace SpaceInvadersClone
 
         void Draw() 
         {
+            window.Clear();
+
             window.Draw(game.Background);
             Game.PlayerInstance.Draw();
             Game.BonusController.Draw();

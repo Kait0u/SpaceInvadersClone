@@ -75,6 +75,7 @@ namespace SpaceInvadersClone
 
         public void Draw() 
         {
+            window.Clear();
             window.Draw(background);
             window.Draw(gameOverText);
             if (clock.ElapsedTime >= waitTime) window.Draw(gameOverInstruction);

@@ -109,6 +109,8 @@ namespace SpaceInvadersClone
 
         void Draw()
         {
+            window.Clear();
+
             drawables.GetRange(0, drawables.Count - 1).ForEach(window.Draw);
             if (skipClock.ElapsedTime >= skipTime) window.Draw(drawables.Last());
 
