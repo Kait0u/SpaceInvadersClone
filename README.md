@@ -20,9 +20,14 @@ This is a clone of the classic videogame Space Invaders, made for practice and o
 <kbd>Enter</kbd> - confirm
 
 ## Features
+
 * Three enemy formations (three kinds of stages), and a special boss stage
 * Medkits and weapon powerups
 * Ability to sacrifice weapon power for some health
+
+## Config
+
+If you'd like to play the game in fullscreen mode, open the config file and change the **"FullScreen"** value to *true*.
 
 ## Graphics credits
 * opengameart.org: StumpyStrust
