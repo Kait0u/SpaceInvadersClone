@@ -10,9 +10,13 @@ This is a clone of the classic videogame Space Invaders, made for practice and o
 ## Controls
 
 <kbd>Arrow Keys</kbd> / <kbd>W</kbd><kbd>S</kbd><kbd>A</kbd><kbd>D</kbd> - flight
+
 <kbd>Left Shift</kbd> - faster flight
+
 <kbd>Space</kbd> - fire
+
 <kbd>Esc</kbd> - pause menu
+
 <kbd>Enter</kbd> - confirm
 
 ## Features
