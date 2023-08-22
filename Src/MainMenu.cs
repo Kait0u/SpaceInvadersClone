@@ -37,7 +37,7 @@ namespace SpaceInvadersClone
             };
             window.KeyPressed += controls;
 
-            drawables = new List<Drawable>();
+            drawables = new List<Drawable>(); // A list for items to be drawn, in order, so as not to have to call 
             options = new Dictionary<Options, Drawable>();
             
 
@@ -55,6 +55,7 @@ namespace SpaceInvadersClone
                 CharacterSize = 100,
                 DisplayedString = "Space Invaders"
             };
+            // Position it to the center
             Vector2f pos = new Vector2f((window.GetView().Size.X - logo.GetLocalBounds().Width) / 2f, 0);
             logo.Position = new Vector2f(pos.X, pos.Y);
             drawables.Add(logo);
@@ -100,7 +101,7 @@ namespace SpaceInvadersClone
 
         public void Dispose() 
         { 
-            window.KeyPressed -= controls;
+            window.KeyPressed -= controls; // Get rid of the controls functionality so that it doesn't work in other screens
         }
 
 
@@ -121,6 +122,7 @@ namespace SpaceInvadersClone
 
         void Update()
         {
+            // Set the color of all options to white, save for the highlited one - that one's red
             foreach (KeyValuePair<Options, Drawable> pair in options)
             {
                 Text t = pair.Value as Text;
@@ -142,21 +144,21 @@ namespace SpaceInvadersClone
 
         void MoveUp()
         {
-            --selected;
-            selected = (Options)Utilities.Utilities.Modulus((int)selected, options.Count());
+            selected = (Options)Utilities.Utilities.Modulus((int)--selected, options.Count());
 
             Application.SoundController.Play(SoundBank.MoveSelection);
         }
 
         void MoveDown() 
         {
-            ++selected;
-            selected = (Options)Utilities.Utilities.Modulus((int)selected, options.Count());
+            selected = (Options)Utilities.Utilities.Modulus((int)++selected, options.Count());
             Application.SoundController.Play(SoundBank.MoveSelection);
         }
 
         void Execute()
         {
+            // Let the application know which state it's going to be in, depending on the option chosen
+
             if (selected == Options.Play) 
             {
                 Application.State = Application.ApplicationStates.Game;

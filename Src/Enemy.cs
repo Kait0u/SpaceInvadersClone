@@ -399,7 +399,6 @@ namespace SpaceInvadersClone
 
         public override int PointValue => health * 5000;
 
-        Game game;
         Random random;
 
         List<EnemyBullet> directedBulletBPs;

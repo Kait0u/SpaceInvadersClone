@@ -87,7 +87,7 @@ namespace SpaceInvadersClone
                 JsonElement root = json.RootElement;
                 windowed = !root.GetProperty("FullScreen").GetBoolean();
             }
-            catch (Exception e) // Something's wrong with the file?
+            catch // Something's wrong with the file?
             {
                 File.WriteAllText(configFilePath, defaultConfigContent);
                 InitializeFromJSON();
